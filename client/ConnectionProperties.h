@@ -5,7 +5,7 @@
 #include <cctype>
 #include <mutex>
 
-namespace smax_ems {
+namespace smax_ns {
 
 inline std::string ToLower(const std::string& input);
 

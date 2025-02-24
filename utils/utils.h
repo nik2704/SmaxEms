@@ -5,7 +5,7 @@
 #include <string>
 #include "../client/ConnectionProperties.h"
 
-namespace smax_ems {
+namespace smax_ns {
 
 struct ValidationResult {
     std::string message;

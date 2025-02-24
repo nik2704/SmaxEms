@@ -5,9 +5,10 @@
 #include <iostream>
 
 #include "../client/RestClient.h"
+#include "../client/ConnectionProperties.h"
 #include "utils.h"
 
-namespace smax_ems {
+namespace smax_ns {
 
 std::unique_ptr<InputValues> create_default_input_values() {
     return std::make_unique<InputValues>(InputValues {

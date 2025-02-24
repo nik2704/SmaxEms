@@ -4,7 +4,7 @@
 #include <mutex>
 #include "ConnectionProperties.h"
 
-namespace smax_ems {
+namespace smax_ns {
 
 ConnectionParameters* ConnectionParameters::instance_ = nullptr;
 
@@ -36,8 +36,8 @@ ConnectionParameters::ConnectionParameters(const InputValues& input_values) :
     host_(ToLower(input_values.host)),
     port_(input_values.port),
     tenant_(input_values.tenant),
-    entity_(ToLower(input_values.entity)),
-    layout_(ToLower(input_values.layout))
+    entity_(input_values.entity),
+    layout_(input_values.layout)
 {}
 
 const std::string& ConnectionParameters::GetProtocol() const { return protocol_; }
@@ -47,4 +47,4 @@ std::size_t ConnectionParameters::GetTenant() const { return tenant_; }
 const std::string& ConnectionParameters::GetEntity() const { return entity_; }
 const std::string& ConnectionParameters::GetLayout() const { return layout_; }
 
-} // namespace smax_ems
+} // namespace smax_ns
