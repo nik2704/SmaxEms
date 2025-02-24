@@ -3,19 +3,9 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include "../client/ConnectionProperties.h"
 
 namespace smax_ems {
-
-struct InputValues {
-    std::string protocol;           ///< protocol
-    std::string host;               ///< SMAX host
-    uint16_t port;                  ///< SMAX port
-    std::size_t tenant;             ///< Tenant ID
-    std::string entity;             ///< Entity Name
-    std::string layout;             ///< Layuot (fields)
-    std::string username;           ///< User name
-    std::string passord;            ///< password
-};
 
 struct ValidationResult {
     std::string message;

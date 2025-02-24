@@ -4,7 +4,7 @@
 #include <future>
 #include <iostream>
 
-#include "../client/rest_client.h"
+#include "../client/RestClient.h"
 #include "utils.h"
 
 namespace smax_ems {

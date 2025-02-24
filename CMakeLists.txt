@@ -26,7 +26,8 @@ find_package(Boost 1.58 REQUIRED COMPONENTS program_options system filesystem)
 # Добавление исполняемого файла
 add_executable(smax_ems
     main.cpp
-    client/rest_client.cpp
+    client/RestClient.cpp
+    client/ConnectionProperties.cpp
     utils/utils.cpp
 )
 
