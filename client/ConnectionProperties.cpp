@@ -1,6 +1,4 @@
 #include <string>
-#include <iostream>
-#include <cctype>
 #include <mutex>
 #include "ConnectionProperties.h"
 
@@ -10,9 +8,11 @@ ConnectionParameters* ConnectionParameters::instance_ = nullptr;
 
 inline std::string ToLower(const std::string& input) {
     std::string result = input;
+
     for (size_t i = 0; i < result.length(); ++i) {
         result[i] = std::tolower(static_cast<unsigned char>(result[i]));
     }
+
     return result;
 }
 
@@ -21,6 +21,7 @@ ConnectionParameters& ConnectionParameters::GetInstance(const InputValues& input
     std::call_once(init_flag, [&]() {
         instance_ = new ConnectionParameters(input_values);
     });
+
     return *instance_;
 }
 
@@ -28,6 +29,7 @@ ConnectionParameters& ConnectionParameters::GetInstance() {
     if (!instance_) {
         throw std::runtime_error("ConnectionParameters is not initialized.");
     }
+
     return *instance_;
 }
 

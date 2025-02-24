@@ -2,8 +2,6 @@
 
 #include <string>
 #include <iostream>
-#include <cctype>
-#include <mutex>
 
 namespace smax_ns {
 
