@@ -12,7 +12,7 @@ namespace smax_ns {
 
 std::unique_ptr<InputValues> create_default_input_values() {
     return std::make_unique<InputValues>(InputValues {
-        "https", "", 80, 0, "", "Id,DisplayLabel", "", ""
+        "https", "", 80, 443, 0, "", "Id,DisplayLabel", "", "", ""
     });
 };
 
@@ -59,6 +59,14 @@ std::unique_ptr<ValidationResult> validate_input_values(const InputValues& input
 
     if (input.layout.empty()) {
         return std::make_unique<ValidationResult>(ValidationResult{"Layout should not be EMPTY.", 1});
+    }
+
+    if (input.username.empty()) {
+        return std::make_unique<ValidationResult>(ValidationResult{"Username should not be EMPTY.", 1});
+    }
+
+    if (input.password.empty()) {
+        return std::make_unique<ValidationResult>(ValidationResult{"Password should not be EMPTY.", 1});
     }
 
     auto output_result = validate_port(input);

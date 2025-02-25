@@ -1,52 +1,44 @@
-#include <string>
-#include <mutex>
 #include "ConnectionProperties.h"
+#include <mutex>
 
 namespace smax_ns {
 
-ConnectionParameters* ConnectionParameters::instance_ = nullptr;
+std::unique_ptr<ConnectionParameters> ConnectionParameters::instance_ = nullptr;
+std::once_flag ConnectionParameters::init_flag_;
 
-inline std::string ToLower(const std::string& input) {
-    std::string result = input;
-
-    for (size_t i = 0; i < result.length(); ++i) {
-        result[i] = std::tolower(static_cast<unsigned char>(result[i]));
-    }
-
-    return result;
-}
-
-ConnectionParameters& ConnectionParameters::GetInstance(const InputValues& input_values) {
-    static std::once_flag init_flag;
-    std::call_once(init_flag, [&]() {
-        instance_ = new ConnectionParameters(input_values);
+ConnectionParameters& ConnectionParameters::getInstance(const InputValues& input_values) {
+    std::call_once(init_flag_, [&]() {
+        instance_.reset(new ConnectionParameters(input_values));
     });
-
     return *instance_;
 }
 
-ConnectionParameters& ConnectionParameters::GetInstance() {
+ConnectionParameters& ConnectionParameters::getInstance() {
     if (!instance_) {
-        throw std::runtime_error("ConnectionParameters is not initialized.");
+        throw std::runtime_error("ConnectionParameters instance not initialized with InputValues.");
     }
-
     return *instance_;
 }
 
-ConnectionParameters::ConnectionParameters(const InputValues& input_values) :
-    protocol_(ToLower(input_values.protocol)),
-    host_(ToLower(input_values.host)),
-    port_(input_values.port),
-    tenant_(input_values.tenant),
-    entity_(input_values.entity),
-    layout_(input_values.layout)
-{}
+ConnectionParameters::ConnectionParameters(const InputValues& input_values)
+    : protocol_(input_values.protocol),
+      host_(input_values.host),
+      port_(input_values.port),
+      secure_port_(input_values.secure_port),
+      tenant_(input_values.tenant),
+      entity_(input_values.entity),
+      layout_(input_values.layout),
+      username_(input_values.username),
+      password_(input_values.password),
+      filter_(input_values.filter) {}
 
-const std::string& ConnectionParameters::GetProtocol() const { return protocol_; }
-const std::string& ConnectionParameters::GetHost() const { return host_; }
-uint16_t ConnectionParameters::GetPort() const { return port_; }
-std::size_t ConnectionParameters::GetTenant() const { return tenant_; }
-const std::string& ConnectionParameters::GetEntity() const { return entity_; }
-const std::string& ConnectionParameters::GetLayout() const { return layout_; }
+const std::string& ConnectionParameters::getProtocol() const { return protocol_; }
+const std::string& ConnectionParameters::getHost() const { return host_; }
+uint16_t ConnectionParameters::getPort() const { return port_; }
+uint16_t ConnectionParameters::getSecurePort() const { return secure_port_; }
+std::size_t ConnectionParameters::getTenant() const { return tenant_; }
+const std::string& ConnectionParameters::getEntity() const { return entity_; }
+const std::string& ConnectionParameters::getLayout() const { return layout_; }
+const std::string& ConnectionParameters::getFilter() const { return filter_; }
 
 } // namespace smax_ns

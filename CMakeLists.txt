@@ -28,6 +28,7 @@ add_executable(smax_ems
     main.cpp
     client/RestClient.cpp
     client/ConnectionProperties.cpp
+    client/SMAXClient.cpp
     utils/utils.cpp
 )
 
