@@ -22,6 +22,7 @@ set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
 # Поиск и подключение зависимостей
 # find_package(nlohmann_json CONFIG REQUIRED)
 find_package(Boost 1.58 REQUIRED COMPONENTS program_options system filesystem)
+find_package(OpenSSL REQUIRED)
 
 # Добавление исполняемого файла
 add_executable(smax_ems
@@ -36,6 +37,7 @@ add_executable(smax_ems
 target_link_libraries(smax_ems
     # nlohmann_json::nlohmann_json
     ${Boost_LIBRARIES}
+    OpenSSL::SSL OpenSSL::Crypto
 )
 
 # Настройки стандарта C++

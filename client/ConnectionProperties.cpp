@@ -40,5 +40,7 @@ std::size_t ConnectionParameters::getTenant() const { return tenant_; }
 const std::string& ConnectionParameters::getEntity() const { return entity_; }
 const std::string& ConnectionParameters::getLayout() const { return layout_; }
 const std::string& ConnectionParameters::getFilter() const { return filter_; }
+const std::string& ConnectionParameters::getUserName() const { return username_; }
+const std::string& ConnectionParameters::getPassword() const { return password_; }
 
 } // namespace smax_ns

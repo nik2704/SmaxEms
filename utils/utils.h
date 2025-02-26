@@ -22,6 +22,6 @@ std::unique_ptr<ValidationResult> validate_protocol(const InputValues& input);
 
 std::unique_ptr<ValidationResult> validate_input_values(const InputValues& input);
 
-std::string perform_request(const std::string& host, const std::string& port);
+// std::string perform_request(const std::string& host, const std::string& port);
 
 } // namespace smax_ems

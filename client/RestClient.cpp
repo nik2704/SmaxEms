@@ -1,8 +1,9 @@
+// RestClient.cpp
 #include "RestClient.h"
 #include <iostream>
 
-RestClient::RestClient(net::io_context& ioc, const std::string& host, const std::string& port)
-    : resolver_(ioc), stream_(ioc), host_(host), port_(port) {}
+RestClient::RestClient(net::io_context& ioc, ssl::context& ctx, const std::string& host, const std::string& port)
+    : resolver_(ioc), stream_(ioc, ctx), host_(host), port_(port) {}
 
 void RestClient::run(const std::string& target, http::verb method, const std::string& body, ResponseHandler handler) {
     target_ = target;
@@ -28,13 +29,20 @@ void RestClient::run(const std::string& target, http::verb method, const std::st
 void RestClient::on_resolve(beast::error_code ec, tcp::resolver::results_type results) {
     if (ec) return fail(ec, "resolve");
 
-    stream_.async_connect(results,
+    beast::get_lowest_layer(stream_).async_connect(results,
         std::bind(&RestClient::on_connect, shared_from_this(),
                   std::placeholders::_1, std::placeholders::_2));
 }
 
 void RestClient::on_connect(beast::error_code ec, tcp::resolver::results_type::endpoint_type) {
     if (ec) return fail(ec, "connect");
+
+    stream_.async_handshake(ssl::stream_base::client,
+        std::bind(&RestClient::on_handshake, shared_from_this(), std::placeholders::_1));
+}
+
+void RestClient::on_handshake(beast::error_code ec) {
+    if (ec) return fail(ec, "handshake");
 
     http::async_write(stream_, req_,
         std::bind(&RestClient::on_write, shared_from_this(),
@@ -54,18 +62,16 @@ void RestClient::on_read(beast::error_code ec, std::size_t bytes_transferred) {
     if (ec) return fail(ec, "read");
     boost::ignore_unused(bytes_transferred);
 
-    // Преобразуем буфер в std::string
-    std::string response = boost::beast::buffers_to_string(res_.body().data());
     if (response_handler_) {
-        response_handler_(response, ec);
+        response_handler_(boost::beast::buffers_to_string(res_.body().data()), ec);
+        response_handler_ = nullptr;  // Обнуляем handler, чтобы избежать повторного вызова
     }
 
-    // Закрытие сокета
-    beast::error_code shutdown_ec;
-    stream_.socket().shutdown(tcp::socket::shutdown_both, shutdown_ec);
-    if (shutdown_ec && shutdown_ec != beast::errc::not_connected) {
-        fail(shutdown_ec, "shutdown");
-    }
+    stream_.async_shutdown([self = shared_from_this()](beast::error_code shutdown_ec) {
+        if (shutdown_ec && shutdown_ec != beast::errc::not_connected && shutdown_ec != boost::asio::ssl::error::stream_truncated) {
+            self->fail(shutdown_ec, "shutdown");
+        }
+    });
 }
 
 

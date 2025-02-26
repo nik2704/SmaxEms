@@ -52,18 +52,22 @@ int main(int argc, char* argv[]) {
         smax_ns::ConnectionParameters& conn_params = smax_ns::ConnectionParameters::getInstance(*input_values);
         smax_ns::SMAXClient& smax_client = smax_ns::SMAXClient::getInstance(conn_params);
 
-        std::cout << smax_client.getAuthorizationUrl() << std::endl;
-        std::cout << smax_client.getEmsUrl() << std::endl;
+        // std::cout << smax_client.getAuthorizationUrl() << std::endl;
+        // std::cout << smax_client.getEmsUrl() << std::endl;
 
         std::cout << "---------------------" << std::endl;
 
-        std::cout << conn_params << std::endl;
+        std::cout << smax_client.getToken() << std::endl;
 
-        std::cout << input_values->protocol << "://" << input_values->host << ":" << input_values->port << "/rest/" << input_values->entity << std::endl;
+        std::cout << "---------------------" << std::endl;
 
-        std::string response = perform_request("jsonplaceholder.typicode.com", "80");
+        // std::cout << conn_params << std::endl;
 
-        std::cout << "Ответ от сервера:\n" << response << std::endl;
+        // std::cout << input_values->protocol << "://" << input_values->host << ":" << input_values->port << "/rest/" << input_values->entity << std::endl;
+
+        // std::string response = perform_request("jsonplaceholder.typicode.com", "80");
+
+        // std::cout << "Ответ от сервера:\n" << response << std::endl;
 
     } catch (const std::exception& e) {
         std::cerr << "Ошибка: " << e.what() << "\n";

@@ -78,31 +78,31 @@ std::unique_ptr<ValidationResult> validate_input_values(const InputValues& input
     return std::make_unique<ValidationResult>(ValidationResult{"Paremeters are correct.", 0});
 }
 
-std::string perform_request(const std::string& host, const std::string& port) {
-    boost::asio::io_context ioc;
-    std::promise<std::string> promise;
-    auto future = promise.get_future();
+// std::string perform_request(const std::string& host, const std::string& port) {
+//     boost::asio::io_context ioc;
+//     std::promise<std::string> promise;
+//     auto future = promise.get_future();
 
-    try {
-        auto client = std::make_shared<RestClient>(ioc, host, port);
+//     try {
+//         auto client = std::make_shared<RestClient>(ioc, host, port);
 
-        client->run("/posts/1", http::verb::get, "", 
-            [&promise](const std::string& response, const boost::system::error_code& ec) {
-                if (!ec) {
-                    promise.set_value(response);  // Устанавливаем результат
-                } else {
-                    promise.set_value("Ошибка GET: " + ec.message());  // В случае ошибки
-                }
-            });
+//         client->run("/posts/1", http::verb::get, "", 
+//             [&promise](const std::string& response, const boost::system::error_code& ec) {
+//                 if (!ec) {
+//                     promise.set_value(response);  // Устанавливаем результат
+//                 } else {
+//                     promise.set_value("Ошибка GET: " + ec.message());  // В случае ошибки
+//                 }
+//             });
 
-        ioc.run();  // Запускаем io_context для обработки асинхронных операций
+//         ioc.run();  // Запускаем io_context для обработки асинхронных операций
 
-    } catch (const std::exception& e) {
-        promise.set_value(std::string("Исключение: ") + e.what());
-    }
+//     } catch (const std::exception& e) {
+//         promise.set_value(std::string("Исключение: ") + e.what());
+//     }
 
-    return future.get();  // Ждём завершения асинхронного запроса
-}
+//     return future.get();  // Ждём завершения асинхронного запроса
+// }
 
 
 }

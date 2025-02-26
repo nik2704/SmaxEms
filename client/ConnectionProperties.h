@@ -35,6 +35,8 @@ public:
     const std::string& getEntity() const;
     const std::string& getLayout() const;
     const std::string& getFilter() const;
+    const std::string& getUserName() const;
+    const std::string& getPassword() const;
 
     friend std::ostream& operator<<(std::ostream& os, const ConnectionParameters& params) {
         os << "Protocol: " << params.protocol_ << "\n"
