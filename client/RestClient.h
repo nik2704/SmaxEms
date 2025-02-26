@@ -22,7 +22,9 @@ public:
     RestClient(net::io_context& ioc, ssl::context& ctx, const std::string& host, const std::string& port);
 
     void run(const std::string& target, http::verb method = http::verb::get, 
-             const std::string& body = "", ResponseHandler handler = nullptr);
+            const std::string& body = "", ResponseHandler handler = nullptr,
+            const std::map<std::string, std::string>& headers = {});
+
 
 private:
     tcp::resolver resolver_;

@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
 
         std::cout << "---------------------" << std::endl;
 
-        std::cout << smax_client.getToken() << std::endl;
+        std::cout << smax_client.getData() << std::endl;
 
         std::cout << "---------------------" << std::endl;
 

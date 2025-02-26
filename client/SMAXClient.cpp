@@ -1,10 +1,13 @@
 #include <boost/asio.hpp>
 #include <chrono>
 #include <future>
+#include <nlohmann/json.hpp>
 #include <sstream>
 
 #include "RestClient.h"
 #include "SMAXClient.h"
+
+using json = nlohmann::json;
 
 namespace smax_ns {
 
@@ -52,6 +55,32 @@ std::string SMAXClient::getEmsUrl() const {
     return url.str();
 }
 
+std::string SMAXClient::getData() {
+    std::string result = "ERROR";
+    auto now = std::chrono::system_clock::now();
+    auto token_age = std::chrono::duration_cast<std::chrono::minutes>(now - token_info_.creation_time).count();
+    
+    if (token_info_.token.empty() || token_age > TOKEN_LIFE_TIME_MINUTES) {
+        getToken();
+    }
+
+    if (token_info_.token != "ERROR") {
+        std::string endpoint = getEmsUrl();
+        auto port = connection_props_.getProtocol() == "http" ? connection_props_.getPort() : connection_props_.getSecurePort();
+
+        request_get(endpoint, port, result);
+
+        try {
+            json parsed_json = json::parse(result);
+            return parsed_json.dump(4);
+        } catch (const std::exception& e) {
+            std::cerr << "Ошибка парсинга JSON: " << e.what() << std::endl;
+        }        
+    }
+    
+    return result;
+}
+
 std::string SMAXClient::getToken() {
     std::ostringstream json_stream;
     json_stream << R"({"login":")" << connection_props_.getUserName() << R"(", "password":")" << connection_props_.getPassword() << R"("})";
@@ -72,26 +101,27 @@ std::string SMAXClient::getToken() {
     return success ? token : "ERROR";
 }
 
-bool SMAXClient::request_post(const std::string& endpoint, uint16_t port, const std::string& json_body, std::string& result) const {
+bool SMAXClient::perform_request(http::verb method, const std::string& endpoint, uint16_t port,
+                                 const std::string& body, std::string& result,
+                                 const std::map<std::string, std::string>& headers) const {
     boost::asio::io_context ioc;
     boost::asio::ssl::context ctx(boost::asio::ssl::context::tls_client);
     std::promise<std::pair<bool, std::string>> promise;
     auto future = promise.get_future();
-
     auto host = connection_props_.getHost();
 
     try {
         auto client = std::make_shared<RestClient>(ioc, ctx, host, std::to_string(port));
 
-        client->run(endpoint, http::verb::post, json_body, 
+        client->run(endpoint, method, body, 
             [&promise](const std::string& response, const boost::system::error_code& ec) {
                 if (!ec) {
                     promise.set_value({true, response});
                 } else {
                     std::cerr << "Setting promise value with error: " << ec.message() << "\n";
-                    promise.set_value({false, "Ошибка POST: " + ec.message()});
+                    promise.set_value({false, "Ошибка запроса: " + ec.message()});
                 }
-            });
+            }, headers);
 
         ioc.run();
     } catch (const std::exception& e) {
@@ -102,6 +132,14 @@ bool SMAXClient::request_post(const std::string& endpoint, uint16_t port, const 
     auto [success, response] = future.get();
     result = response;
     return success;
+}
+
+bool SMAXClient::request_get(const std::string& endpoint, uint16_t port, std::string& result) const {
+    return perform_request(http::verb::get, endpoint, port, "", result, {{"Cookie", "SMAX_AUTH_TOKEN=" + token_info_.token}});
+}
+
+bool SMAXClient::request_post(const std::string& endpoint, uint16_t port, const std::string& json_body, std::string& result) const {
+    return perform_request(http::verb::post, endpoint, port, json_body, result);
 }
 
 
