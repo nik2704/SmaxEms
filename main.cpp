@@ -6,9 +6,7 @@
 #include "utils/utils.h"
 #include "client/SMAXClient.h"
 
-
 namespace po = boost::program_options;
-
 using namespace smax_ns;
 
 int main(int argc, char* argv[]) {
@@ -17,6 +15,7 @@ int main(int argc, char* argv[]) {
 
         po::options_description desc("Допустимые опции", 120);
         desc.add_options()
+            ("config-file", po::value<std::string>(), "Путь к конфигурационному файлу")
             ("smax-protocol,p", po::value<std::string>(&input_values->protocol)->default_value("https"), "protocol (http | https default)")
             ("smax-host,s", po::value<std::string>(&input_values->host), "FQDN of SMAX server")
             ("smax-port,c", po::value<uint16_t>(&input_values->port)->default_value(80), "Connection port (80 is default)")
@@ -30,7 +29,18 @@ int main(int argc, char* argv[]) {
             ("help,h", "Помощь");
 
         po::variables_map vm;
+
         po::store(po::parse_command_line(argc, argv, desc), vm);
+
+        if (vm.count("config-file")) {
+            std::ifstream config_file(vm["config-file"].as<std::string>());
+            if (config_file) {
+                po::store(po::parse_config_file(config_file, desc), vm);
+            } else {
+                std::cerr << "Ошибка: Не удалось открыть конфигурационный файл.\n";
+                return 1;
+            }
+        }
 
         if (vm.count("help")) {
             std::cout << desc << "\n";
@@ -40,7 +50,6 @@ int main(int argc, char* argv[]) {
         po::notify(vm);
 
         auto validation_result = validate_input_values(*input_values);
-
         if (validation_result->result != 0) {
             std::cout << "Ошибка: " << validation_result->message << "\n";
             return 1;
