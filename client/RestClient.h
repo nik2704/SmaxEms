@@ -17,7 +17,7 @@ using tcp = net::ip::tcp;
 
 class RestClient : public std::enable_shared_from_this<RestClient> {
 public:
-    using ResponseHandler = std::function<void(const std::string&, const beast::error_code&)>;
+    using ResponseHandler = std::function<void(const std::string&, const boost::system::error_code&, int)>;
 
     RestClient(net::io_context& ioc, ssl::context& ctx, const std::string& host, const std::string& port);
 

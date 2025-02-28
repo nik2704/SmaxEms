@@ -1,8 +1,6 @@
 #pragma once
 
 #include <boost/beast/http.hpp>
-#include <memory>
-#include <mutex>
 #include "ConnectionProperties.h"
 
 namespace smax_ns {
@@ -34,14 +32,15 @@ private:
     TokenInfo token_info_;
 
     explicit SMAXClient(const ConnectionParameters& connection_props);
+    void updateToken();
     bool perform_request(boost::beast::http::verb method,
         const std::string& endpoint,
         uint16_t port, 
         const std::string& body, std::string& result, 
-        const std::map<std::string, std::string>& headers = {}) const;
+        const std::map<std::string, std::string>& headers, int& status_code) const;
 
-    bool request_post(const std::string& endpoint, uint16_t port, const std::string& json_body, std::string& result) const;
-    bool request_get(const std::string& endpoint, uint16_t port, std::string& result) const;
+    bool request_post(const std::string& endpoint, uint16_t port, const std::string& json_body, std::string& result, int& status_code) const;
+    bool request_get(const std::string& endpoint, uint16_t port, std::string& result, int& status_code) const;
 };
 
 }
