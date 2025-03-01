@@ -4,17 +4,10 @@
 #include <future>
 #include <iostream>
 
-#include "../client/RestClient.h"
-#include "../client/ConnectionProperties.h"
+#include "../SmaxClient/ConnectionProperties.h"
 #include "utils.h"
 
 namespace smax_ns {
-
-std::unique_ptr<InputValues> create_default_input_values() {
-    return std::make_unique<InputValues>(InputValues {
-        "https", "", 80, 443, 0, "", "Id,DisplayLabel", "", "", ""
-    });
-};
 
 bool is_string_equals(const std::string& a, const std::string& b) {
     return a.size() == b.size() &&
@@ -30,7 +23,6 @@ std::unique_ptr<ValidationResult> validate_port(const InputValues& input) {
         });
     }
 
-#include <iostream>
     return std::make_unique<ValidationResult>(ValidationResult{"", 0});
 }
 
@@ -42,6 +34,14 @@ std::unique_ptr<ValidationResult> validate_protocol(const InputValues& input) {
     }
     
     return std::make_unique<ValidationResult>(ValidationResult{"", 0});
+}
+
+std::unique_ptr<ValidationResult> validate_action(const InputValues& input) {
+    if (input.action == "GET" || input.action == "CREATE" ||input.action == "UPDATE") {
+        return std::make_unique<ValidationResult>(ValidationResult{"", 0});
+    }
+
+    return std::make_unique<ValidationResult>(ValidationResult{"Action should be GET | UPDATE | CREATE", 1});
 }
 
 std::unique_ptr<ValidationResult> validate_input_values(const InputValues& input) {
@@ -72,8 +72,15 @@ std::unique_ptr<ValidationResult> validate_input_values(const InputValues& input
     auto output_result = validate_port(input);
     if (output_result->result != 0) return output_result;
 
-    auto format_result = validate_protocol(input);
-    if (format_result->result != 0) return format_result;
+    output_result = validate_protocol(input);
+    if (output_result->result != 0) return output_result;
+
+    output_result = validate_action(input);
+    if (output_result->result != 0) return output_result;
+
+    if (input.action != "GET" && input.csv.empty()) {
+        return std::make_unique<ValidationResult>(ValidationResult{"CSV is mandatory for CREATE or UPDATE", 1});
+    }
 
     return std::make_unique<ValidationResult>(ValidationResult{"Paremeters are correct.", 0});
 }

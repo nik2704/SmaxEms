@@ -20,6 +20,8 @@ struct InputValues {
     std::string username;           ///< User name
     std::string password;           ///< Password
     std::string filter;             ///< Filter
+    std::string action;             ///< Action
+    std::string csv;                ///< CSV for update or create records
 };
 
 class ConnectionParameters {
@@ -37,6 +39,8 @@ public:
     const std::string& getFilter() const;
     const std::string& getUserName() const;
     const std::string& getPassword() const;
+    const std::string& getAction() const;
+    const std::string& getCSVfilename() const;
 
     friend std::ostream& operator<<(std::ostream& os, const ConnectionParameters& params) {
         os << "Protocol: " << params.protocol_ << "\n"
@@ -67,6 +71,8 @@ private:
     std::string username_;
     std::string password_;
     std::string filter_;
+    std::string action_;
+    std::string csv_;
 };
 
 } // namespace smax_ns

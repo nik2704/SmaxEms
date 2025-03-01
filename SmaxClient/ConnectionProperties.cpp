@@ -30,7 +30,9 @@ ConnectionParameters::ConnectionParameters(const InputValues& input_values)
       layout_(input_values.layout),
       username_(input_values.username),
       password_(input_values.password),
-      filter_(input_values.filter) {}
+      filter_(input_values.filter),
+      action_(input_values.action),
+      csv_(input_values.csv) {}
 
 const std::string& ConnectionParameters::getProtocol() const { return protocol_; }
 const std::string& ConnectionParameters::getHost() const { return host_; }
@@ -42,5 +44,8 @@ const std::string& ConnectionParameters::getLayout() const { return layout_; }
 const std::string& ConnectionParameters::getFilter() const { return filter_; }
 const std::string& ConnectionParameters::getUserName() const { return username_; }
 const std::string& ConnectionParameters::getPassword() const { return password_; }
+const std::string& ConnectionParameters::getAction() const { return action_; }
+const std::string& ConnectionParameters::getCSVfilename() const { return csv_; }
+
 
 } // namespace smax_ns

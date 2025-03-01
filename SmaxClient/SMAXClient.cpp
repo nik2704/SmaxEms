@@ -4,7 +4,7 @@
 #include <nlohmann/json.hpp>
 #include <sstream>
 
-#include "RestClient.h"
+#include "../RestClient/RestClient.h"
 #include "SMAXClient.h"
 
 using json = nlohmann::json;
