@@ -53,6 +53,28 @@ std::string SMAXClient::getEmsUrl() const {
     return url.str();
 }
 
+std::string SMAXClient::doAction() {
+    auto action = connection_props_.getAction();
+
+    if (connection_props_.isVerbose()) {
+        return "Verbose";
+    }
+
+    if (action == "GET") {
+        return getData();
+    }
+
+    if (action == "CREATE") {
+        return getData();
+    }
+
+    if (action == "UPDATE") {
+        return getData();
+    }
+
+    return "Unsupported action";
+}
+
 std::string SMAXClient::getData() {
     std::string result = "ERROR";
     updateToken();

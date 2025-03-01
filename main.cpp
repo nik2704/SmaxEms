@@ -5,6 +5,7 @@
 
 #include "utils/utils.h"
 #include "SmaxClient/SMAXClient.h"
+#include "Parser/Parser.h"
 
 namespace po = boost::program_options;
 using namespace smax_ns;
@@ -28,6 +29,7 @@ int main(int argc, char* argv[]) {
             ("filter", po::value<std::string>(&input_values.filter), "Filter (like \"Id='52641'\")")
             ("action", po::value<std::string>(&input_values.action)->required()->default_value("GET"), "Action (GET is default, CREATE, UPDATE)")
             ("csv", po::value<std::string>(&input_values.csv), "CSV file name (required if action is not GET)")
+            ("verbose,v", po::bool_switch(&input_values.verbose)->default_value(false), "Enable verbose output")
             ("help,h", "Help");
 
         po::variables_map vm;
@@ -59,7 +61,10 @@ int main(int argc, char* argv[]) {
         smax_ns::ConnectionParameters& conn_params = smax_ns::ConnectionParameters::getInstance(input_values);
         smax_ns::SMAXClient& smax_client = smax_ns::SMAXClient::getInstance(conn_params);
 
-        std::cout << smax_client.getData() << std::endl;
+        std::cout << smax_client.doAction() << std::endl;
+
+        smax_ns::Parser parser(input_values.csv);
+        parser.parseCSV(input_values.entity, input_values.action);
 
     } catch (const std::exception& e) {
         std::cerr << "ERROR: " << e.what() << "\n";

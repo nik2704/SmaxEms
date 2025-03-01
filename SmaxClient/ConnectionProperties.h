@@ -22,6 +22,7 @@ struct InputValues {
     std::string filter;             ///< Filter
     std::string action;             ///< Action
     std::string csv;                ///< CSV for update or create records
+    bool verbose;                   ///< Just information
 };
 
 class ConnectionParameters {
@@ -41,6 +42,7 @@ public:
     const std::string& getPassword() const;
     const std::string& getAction() const;
     const std::string& getCSVfilename() const;
+    bool isVerbose() const;
 
     friend std::ostream& operator<<(std::ostream& os, const ConnectionParameters& params) {
         os << "Protocol: " << params.protocol_ << "\n"
@@ -73,6 +75,7 @@ private:
     std::string filter_;
     std::string action_;
     std::string csv_;
+    bool verbose_;
 };
 
 } // namespace smax_ns

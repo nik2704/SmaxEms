@@ -23,7 +23,7 @@ public:
 
     std::string getAuthorizationUrl() const;
     std::string getEmsUrl() const;
-    std::string getData();
+    std::string doAction();
     std::string getToken();
 private:
     const ConnectionParameters& connection_props_;
@@ -32,6 +32,7 @@ private:
     TokenInfo token_info_;
 
     explicit SMAXClient(const ConnectionParameters& connection_props);
+    std::string getData();
     void updateToken();
     bool perform_request(boost::beast::http::verb method,
         const std::string& endpoint,
