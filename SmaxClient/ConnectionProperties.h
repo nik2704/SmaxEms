@@ -7,7 +7,9 @@
 
 namespace smax_ns {
 
-inline std::string ToLower(const std::string& input);
+enum class Action { GET, CREATE, UPDATE, CUSTOM, UNKNOW };
+
+inline Action parseAction(const std::string& action_str);
 
 struct InputValues {
     std::string protocol;           ///< Protocol
@@ -40,7 +42,8 @@ public:
     const std::string& getFilter() const;
     const std::string& getUserName() const;
     const std::string& getPassword() const;
-    const std::string& getAction() const;
+    const Action& getAction() const;
+    std::string getActionAsString() const;
     const std::string& getCSVfilename() const;
     bool isVerbose() const;
 
@@ -73,9 +76,11 @@ private:
     std::string username_;
     std::string password_;
     std::string filter_;
-    std::string action_;
+    Action action_;
     std::string csv_;
     bool verbose_;
+
+    static std::string actionToString(Action action);
 };
 
 } // namespace smax_ns

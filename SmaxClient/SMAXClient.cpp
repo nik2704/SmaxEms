@@ -63,44 +63,61 @@ std::string SMAXClient::getBulkPostUrl() const {
 std::string SMAXClient::doAction() {
     if (connection_props_.isVerbose()) return getRequestInfo();
 
-    static const std::unordered_map<std::string, std::function<std::string()>> actions{
-        {"GET", [this] { return getData(); }},
-        {"CREATE", [this] { return postData(); }},
-        {"UPDATE", [this] { return postData(); }}
-    };
+    switch (connection_props_.getAction()) {
+    case Action::GET:
+        return getData();
 
-    auto it = actions.find(connection_props_.getAction());
-    return (it != actions.end()) ? it->second() : "Unsupported action";
+    case Action::CREATE:
+        return postData();
+
+    case Action::UPDATE:
+        return postData();
+
+    case Action::CUSTOM:
+        return "CUSTOM";
+
+    default:
+        break;
+    }
+    
+    return "Unsupported action";
 }
 
 std::string SMAXClient::getRequestInfo() const {
     std::ostringstream oss;
-    std::string http_action = connection_props_.getAction() == "GET" ? "GET" : "POST";
-    std::string url = connection_props_.getAction() == "GET" ? getEmsUrl() : getBulkPostUrl();
-    json authBody = json::parse(getAuthBody());
+    // std::string http_action = "GET";
+    // auto action = connection_props_.getAction();
 
-    oss << "RRequest parameters:\n"
-        << "1) Authorization URL: " << getAuthorizationUrl() << "\n"
-        << "Authorization body:\n"
-        << authBody.dump(4) << "\n\n"
-        << "2) URL: " << url << "\n"
-        << "3) Action: " << connection_props_.getAction() << "\n"
-        << "4) HTTP action: <" << http_action << ">\n";
+    // if (action == Action::CREATE || action == Action::UPDATE || action == Action::CUSTOM) {   //PROCESS CUSTOM
+    //     http_action = "POST";
+    // }
+
+    // std::string url = http_action == "GET" ? getEmsUrl() : getBulkPostUrl();
+
+    // json authBody = json::parse(getAuthBody());
+
+    // oss << "RRequest parameters:\n"
+    //     << "1) Authorization URL: " << getAuthorizationUrl() << "\n"
+    //     << "Authorization body:\n"
+    //     << authBody.dump(4) << "\n\n"
+    //     << "2) URL: " << url << "\n"
+    //     << "3) Action: " << connection_props_.getAction() << "\n"
+    //     << "4) HTTP action: <" << http_action << ">\n";
     
-    if (connection_props_.getAction() != "GET") {
-        Parser parser(connection_props_.getCSVfilename());
+    // if (action != "GET") {
+    //     Parser parser(connection_props_.getCSVfilename());
 
-        auto postBody = parser.parseCSV(connection_props_.getEntity(), connection_props_.getAction());
-        oss << "5) POST Body:\n"
-        << postBody.dump(4) << "\n";
-    }
+    //     auto postBody = parser.parseCSV(connection_props_.getEntity(), connection_props_.getAction());
+    //     oss << "5) POST Body:\n"
+    //     << postBody.dump(4) << "\n";
+    // }
 
     return oss.str();
 }
 
 std::string SMAXClient::postData() {
     Parser parser(connection_props_.getCSVfilename());
-    auto postBody = parser.parseCSV(connection_props_.getEntity(), connection_props_.getAction()).dump();
+    auto postBody = parser.parseCSV(connection_props_.getEntity(), connection_props_.getActionAsString()).dump();
 
     return sendRequest(getBulkPostUrl(), postBody, true);
 }

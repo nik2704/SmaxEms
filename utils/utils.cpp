@@ -37,7 +37,7 @@ std::unique_ptr<ValidationResult> validate_protocol(const InputValues& input) {
 }
 
 std::unique_ptr<ValidationResult> validate_action(const InputValues& input) {
-    if (input.action == "GET" || input.action == "CREATE" ||input.action == "UPDATE") {
+    if (input.action == "GET" || input.action == "CREATE" || input.action == "UPDATE" || input.action == "CUSTOM") {
         return std::make_unique<ValidationResult>(ValidationResult{"", 0});
     }
 

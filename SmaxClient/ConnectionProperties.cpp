@@ -1,10 +1,33 @@
 #include "ConnectionProperties.h"
 #include <mutex>
+#include <unordered_map>
 
 namespace smax_ns {
 
 std::unique_ptr<ConnectionParameters> ConnectionParameters::instance_ = nullptr;
 std::once_flag ConnectionParameters::init_flag_;
+
+Action parseAction(const std::string& action_str) {
+    static const std::unordered_map<std::string, Action> action_map = {
+        {"GET", Action::GET},
+        {"CREATE", Action::CREATE},
+        {"CUSTOM", Action::CUSTOM},
+        {"UPDATE", Action::UPDATE}
+    };
+
+    auto it = action_map.find(action_str);
+    return (it != action_map.end()) ? it->second : Action::UNKNOW;
+}
+
+std::string ConnectionParameters::actionToString(Action action) {
+    switch (action) {
+        case Action::GET: return "GET";
+        case Action::CREATE: return "CREATE";
+        case Action::CUSTOM: return "CUSTOM";
+        case Action::UPDATE: return "UPDATE";
+        default: return "UNKNOWN";
+    }
+}
 
 ConnectionParameters& ConnectionParameters::getInstance(const InputValues& input_values) {
     std::call_once(init_flag_, [&]() {
@@ -31,7 +54,7 @@ ConnectionParameters::ConnectionParameters(const InputValues& input_values)
       username_(input_values.username),
       password_(input_values.password),
       filter_(input_values.filter),
-      action_(input_values.action),
+      action_(parseAction(input_values.action)),
       csv_(input_values.csv),
       verbose_(input_values.verbose) {}
 
@@ -45,7 +68,8 @@ const std::string& ConnectionParameters::getLayout() const { return layout_; }
 const std::string& ConnectionParameters::getFilter() const { return filter_; }
 const std::string& ConnectionParameters::getUserName() const { return username_; }
 const std::string& ConnectionParameters::getPassword() const { return password_; }
-const std::string& ConnectionParameters::getAction() const { return action_; }
+const Action& ConnectionParameters::getAction() const { return action_; }
+std::string ConnectionParameters::getActionAsString() const { return actionToString(action_); }
 const std::string& ConnectionParameters::getCSVfilename() const { return csv_; }
 bool ConnectionParameters::isVerbose() const { return verbose_; }
 
