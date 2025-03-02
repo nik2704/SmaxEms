@@ -25,17 +25,9 @@ SMAXClient& SMAXClient::getInstance(const ConnectionParameters& connection_props
 SMAXClient::SMAXClient(const ConnectionParameters& connection_props) : connection_props_(connection_props) {}
 
 std::string SMAXClient::getAuthorizationUrl() const {
-    std::ostringstream url;
-    url << connection_props_.getProtocol() << "://" << connection_props_.getHost();
-
-    uint16_t port = connection_props_.getSecurePort();
-
-    if (port != 80) {
-        url << ":" << port;
-    }
-
-    url << "/auth/authentication-endpoint/authenticate/login?TENANTID=" << connection_props_.getTenant();
-    return url.str();
+    return connection_props_.getProtocol() + "://" + connection_props_.getHost() +
+           (connection_props_.getSecurePort() != 80 ? ":" + std::to_string(connection_props_.getSecurePort()) : "") +
+           "/auth/authentication-endpoint/authenticate/login?TENANTID=" + std::to_string(connection_props_.getTenant());
 }
 
 std::string SMAXClient::getBaseUrl() const {
@@ -69,25 +61,16 @@ std::string SMAXClient::getBulkPostUrl() const {
 }
 
 std::string SMAXClient::doAction() {
-    auto action = connection_props_.getAction();
+    if (connection_props_.isVerbose()) return getRequestInfo();
 
-    if (connection_props_.isVerbose()) {
-        return getRequestInfo();
-    }
+    static const std::unordered_map<std::string, std::function<std::string()>> actions{
+        {"GET", [this] { return getData(); }},
+        {"CREATE", [this] { return postData(); }},
+        {"UPDATE", [this] { return postData(); }}
+    };
 
-    if (action == "GET") {
-        return getData();
-    }
-
-    if (action == "CREATE") {
-        return postData();
-    }
-
-    if (action == "UPDATE") {
-        return postData();
-    }
-
-    return "Unsupported action";
+    auto it = actions.find(connection_props_.getAction());
+    return (it != actions.end()) ? it->second() : "Unsupported action";
 }
 
 std::string SMAXClient::getRequestInfo() const {
