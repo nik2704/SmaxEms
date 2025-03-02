@@ -110,29 +110,25 @@ std::string SMAXClient::getData() {
 }
 
 std::string SMAXClient::sendRequest(const std::string& endpoint, const std::string& body, bool isPost) {
-    std::string result = "ERROR";
     updateToken();
 
     if (!token_info_.has_value() || token_info_->token == "ERROR") {
-        return result;
+        return "ERROR";
     }
 
-    int status_code;
-    int port = getPort();
-    
-    if (isPost) {
-        request_post(endpoint, port, body, result, status_code);
-    } else {
-        request_get(endpoint, port, result, status_code);
-    }
+    std::future<std::string> future = std::async(std::launch::async, [&] {
+        std::string result;
+        int status_code;
 
-    if (status_code != 200) {
-        std::cerr << (isPost ? "Ошибка POST-запроса" : "Ошибка GET-запроса") << std::endl;
-        return result;
-    }
+        bool success = isPost ? request_post(endpoint, getPort(), body, result, status_code)
+                              : request_get(endpoint, getPort(), result, status_code);
 
-    return parseJson(result);
+        return (success && status_code == 200) ? parseJson(result) : "ERROR";
+    });
+
+    return future.get();
 }
+
 
 std::string SMAXClient::parseJson(const std::string& data) {
     try {
