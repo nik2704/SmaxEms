@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <boost/beast/http.hpp>
 #include "ConnectionProperties.h"
 
@@ -30,7 +31,8 @@ private:
     const ConnectionParameters& connection_props_;
     static std::unique_ptr<SMAXClient> instance_;
     static std::once_flag init_flag_;
-    TokenInfo token_info_;
+    std::optional<TokenInfo> token_info_;
+
 
     explicit SMAXClient(const ConnectionParameters& connection_props);
     std::string getData();

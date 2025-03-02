@@ -130,7 +130,7 @@ std::string SMAXClient::sendRequest(const std::string& endpoint, const std::stri
     std::string result = "ERROR";
     updateToken();
 
-    if (token_info_.token == "ERROR") {
+    if (!token_info_.has_value() || token_info_->token == "ERROR") {
         return result;
     }
 
@@ -168,9 +168,10 @@ int SMAXClient::getPort() const {
 
 void SMAXClient::updateToken() {
     auto now = std::chrono::system_clock::now();
-    auto token_age = std::chrono::duration_cast<std::chrono::minutes>(now - token_info_.creation_time).count();
 
-    if (token_info_.token.empty() || token_age > TOKEN_LIFE_TIME_MINUTES) {
+    if (!token_info_.has_value() || 
+        std::chrono::duration_cast<std::chrono::minutes>(now - token_info_->creation_time).count() > TOKEN_LIFE_TIME_MINUTES) {
+        
         if (getToken() == "ERROR") {
             std::cerr << "Ошибка получения токена" << std::endl;
         }
@@ -194,18 +195,13 @@ std::string SMAXClient::getToken() {
 
     bool success = auth_post(endpoint, port, json_body, token, status_code);
 
-    if (status_code != 200) {
-        success = false;
+    if (!success || status_code != 200) {
+        token_info_.reset();
+        return "ERROR";
     }
 
-    if (success) {
-        token_info_.token = token;
-        token_info_.creation_time = std::chrono::system_clock::now();
-    } else {
-        token_info_.token = "ERROR";
-    }
-
-    return token_info_.token;
+    token_info_ = TokenInfo{token, std::chrono::system_clock::now()};
+    return token;
 }
 
 bool SMAXClient::perform_request(http::verb method, const std::string& endpoint, uint16_t port,
@@ -244,7 +240,7 @@ bool SMAXClient::perform_request(http::verb method, const std::string& endpoint,
 }
 
 bool SMAXClient::request_get(const std::string& endpoint, uint16_t port, std::string& result, int& status_code) const {
-    return perform_request(http::verb::get, endpoint, port, "", result, {{"Cookie", "SMAX_AUTH_TOKEN=" + token_info_.token}}, status_code);
+    return perform_request(http::verb::get, endpoint, port, "", result, {{"Cookie", "SMAX_AUTH_TOKEN=" + token_info_->token}}, status_code);
 }
 
 bool SMAXClient::auth_post(const std::string& endpoint, uint16_t port, const std::string& json_body, std::string& result, int& status_code) const {
@@ -252,7 +248,7 @@ bool SMAXClient::auth_post(const std::string& endpoint, uint16_t port, const std
 }
 
 bool SMAXClient::request_post(const std::string& endpoint, uint16_t port, const std::string& json_body, std::string& result, int& status_code) const {
-    return perform_request(http::verb::post, endpoint, port, json_body, result, {{"Cookie", "SMAX_AUTH_TOKEN=" + token_info_.token}}, status_code);
+    return perform_request(http::verb::post, endpoint, port, json_body, result, {{"Cookie", "SMAX_AUTH_TOKEN=" + token_info_->token}}, status_code);
 }
 
 
