@@ -119,57 +119,51 @@ std::string SMAXClient::postData() {
     Parser parser(connection_props_.getCSVfilename());
     auto postBody = parser.parseCSV(connection_props_.getEntity(), connection_props_.getAction()).dump();
 
-    std::string result = "ERROR";
-    updateToken();
-
-    if (token_info_.token != "ERROR") {
-        std::string endpoint = getBulkPostUrl();
-        auto port = connection_props_.getProtocol() == "http" ? connection_props_.getPort() : connection_props_.getSecurePort();
-        int status_code;
-
-        request_post(endpoint, port, postBody, result, status_code);
-
-        if (status_code != 200) {
-            std::cerr << "PST request ERROR" << std::endl;
-            return result;
-        }
-
-        try {
-            json parsed_json = json::parse(result);
-            return parsed_json.dump(4);
-        } catch (const std::exception& e) {
-            std::cerr << "JSON parsing ERROR: " << e.what() << std::endl;
-        }        
-    }
-    
-    return result;
+    return sendRequest(getBulkPostUrl(), postBody, true);
 }
 
 std::string SMAXClient::getData() {
+    return sendRequest(getEmsUrl(), "", false);
+}
+
+std::string SMAXClient::sendRequest(const std::string& endpoint, const std::string& body, bool isPost) {
     std::string result = "ERROR";
     updateToken();
 
-    if (token_info_.token != "ERROR") {
-        std::string endpoint = getEmsUrl();
-        auto port = connection_props_.getProtocol() == "http" ? connection_props_.getPort() : connection_props_.getSecurePort();
-        int status_code;
-
-        request_get(endpoint, port, result, status_code);
-
-        if (status_code != 200) {
-            std::cerr << "Ошибка получения данных" << std::endl;
-            return result;
-        }
-
-        try {
-            json parsed_json = json::parse(result);
-            return parsed_json.dump(4);
-        } catch (const std::exception& e) {
-            std::cerr << "Ошибка парсинга JSON: " << e.what() << std::endl;
-        }        
+    if (token_info_.token == "ERROR") {
+        return result;
     }
+
+    int status_code;
+    int port = getPort();
     
-    return result;
+    if (isPost) {
+        request_post(endpoint, port, body, result, status_code);
+    } else {
+        request_get(endpoint, port, result, status_code);
+    }
+
+    if (status_code != 200) {
+        std::cerr << (isPost ? "Ошибка POST-запроса" : "Ошибка GET-запроса") << std::endl;
+        return result;
+    }
+
+    return parseJson(result);
+}
+
+std::string SMAXClient::parseJson(const std::string& data) {
+    try {
+        json parsed_json = json::parse(data);
+        return parsed_json.dump(4);
+    } catch (const std::exception& e) {
+        std::cerr << "Ошибка парсинга JSON: " << e.what() << std::endl;
+        return "ERROR";
+    }
+}
+
+int SMAXClient::getPort() const {
+    return (connection_props_.getProtocol() == "http") ? 
+            connection_props_.getPort() : connection_props_.getSecurePort();
 }
 
 void SMAXClient::updateToken() {

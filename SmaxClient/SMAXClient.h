@@ -48,6 +48,9 @@ private:
     bool request_get(const std::string& endpoint, uint16_t port, std::string& result, int& status_code) const;
     std::string getRequestInfo() const;
     std::string getBaseUrl() const;
+    std::string parseJson(const std::string& data);
+    std::string sendRequest(const std::string& endpoint, const std::string& body, bool isPost);
+    int getPort() const;
 };
 
 }
