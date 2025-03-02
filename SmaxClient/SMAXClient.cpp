@@ -27,30 +27,44 @@ SMAXClient::SMAXClient(const ConnectionParameters& connection_props) : connectio
 std::string SMAXClient::getAuthorizationUrl() const {
     std::ostringstream url;
     url << connection_props_.getProtocol() << "://" << connection_props_.getHost();
+
     uint16_t port = connection_props_.getSecurePort();
+
     if (port != 80) {
         url << ":" << port;
     }
+
     url << "/auth/authentication-endpoint/authenticate/login?TENANTID=" << connection_props_.getTenant();
+    return url.str();
+}
+
+std::string SMAXClient::getBaseUrl() const {
+    std::ostringstream url;
+    url << connection_props_.getProtocol() << "://" << connection_props_.getHost();
+    
+    uint16_t port = connection_props_.getPort();
+    if (port != 80) {
+        url << ":" << port;
+    }
+
+    url << "/rest/" << connection_props_.getTenant() << "/ems";
     return url.str();
 }
 
 std::string SMAXClient::getEmsUrl() const {
     std::ostringstream url;
-    url << connection_props_.getProtocol() << "://" << connection_props_.getHost();
-    uint16_t port = connection_props_.getPort();
+    url << getBaseUrl() << "/" << connection_props_.getEntity() << "?layout=" << connection_props_.getLayout();
     
-    if (port != 80) {
-        url << ":" << port;
-    }
-    
-    url << "/rest/" << connection_props_.getTenant() << "/ems/" << connection_props_.getEntity() << "?layout=";
-    url << connection_props_.getLayout();
-
     if (!connection_props_.getFilter().empty()) {
         url << "&filter=" << connection_props_.getFilter();
     }
 
+    return url.str();
+}
+
+std::string SMAXClient::getBulkPostUrl() const {
+    std::ostringstream url;
+    url << getBaseUrl() << "/bulk";
     return url.str();
 }
 
@@ -66,11 +80,11 @@ std::string SMAXClient::doAction() {
     }
 
     if (action == "CREATE") {
-        return getData();
+        return postData();
     }
 
     if (action == "UPDATE") {
-        return getData();
+        return postData();
     }
 
     return "Unsupported action";
@@ -79,13 +93,14 @@ std::string SMAXClient::doAction() {
 std::string SMAXClient::getRequestInfo() const {
     std::ostringstream oss;
     std::string http_action = connection_props_.getAction() == "GET" ? "GET" : "POST";
+    std::string url = connection_props_.getAction() == "GET" ? getEmsUrl() : getBulkPostUrl();
     json authBody = json::parse(getAuthBody());
 
     oss << "RRequest parameters:\n"
         << "1) Authorization URL: " << getAuthorizationUrl() << "\n"
         << "Authorization body:\n"
         << authBody.dump(4) << "\n\n"
-        << "2) URL: " << getEmsUrl() << "\n"
+        << "2) URL: " << url << "\n"
         << "3) Action: " << connection_props_.getAction() << "\n"
         << "4) HTTP action: <" << http_action << ">\n";
     
@@ -98,6 +113,36 @@ std::string SMAXClient::getRequestInfo() const {
     }
 
     return oss.str();
+}
+
+std::string SMAXClient::postData() {
+    Parser parser(connection_props_.getCSVfilename());
+    auto postBody = parser.parseCSV(connection_props_.getEntity(), connection_props_.getAction()).dump();
+
+    std::string result = "ERROR";
+    updateToken();
+
+    if (token_info_.token != "ERROR") {
+        std::string endpoint = getBulkPostUrl();
+        auto port = connection_props_.getProtocol() == "http" ? connection_props_.getPort() : connection_props_.getSecurePort();
+        int status_code;
+
+        request_post(endpoint, port, postBody, result, status_code);
+
+        if (status_code != 200) {
+            std::cerr << "PST request ERROR" << std::endl;
+            return result;
+        }
+
+        try {
+            json parsed_json = json::parse(result);
+            return parsed_json.dump(4);
+        } catch (const std::exception& e) {
+            std::cerr << "JSON parsing ERROR: " << e.what() << std::endl;
+        }        
+    }
+    
+    return result;
 }
 
 std::string SMAXClient::getData() {
@@ -153,7 +198,8 @@ std::string SMAXClient::getToken() {
     std::string token;
     int status_code;
 
-    bool success = request_post(endpoint, port, json_body, token, status_code);
+    bool success = auth_post(endpoint, port, json_body, token, status_code);
+
     if (status_code != 200) {
         success = false;
     }
@@ -195,12 +241,11 @@ bool SMAXClient::perform_request(http::verb method, const std::string& endpoint,
         std::cerr << "Exception: " << e.what() << "\n";
         promise.set_value({false, "Исключение: " + std::string(e.what()), 0});
     }
-    return "Verbose";
 
     auto [success, response, http_status] = future.get();
     result = response;
     status_code = http_status;
-    
+
     return success;
 }
 
@@ -208,8 +253,12 @@ bool SMAXClient::request_get(const std::string& endpoint, uint16_t port, std::st
     return perform_request(http::verb::get, endpoint, port, "", result, {{"Cookie", "SMAX_AUTH_TOKEN=" + token_info_.token}}, status_code);
 }
 
-bool SMAXClient::request_post(const std::string& endpoint, uint16_t port, const std::string& json_body, std::string& result, int& status_code) const {
+bool SMAXClient::auth_post(const std::string& endpoint, uint16_t port, const std::string& json_body, std::string& result, int& status_code) const {
     return perform_request(http::verb::post, endpoint, port, json_body, result, {}, status_code);
+}
+
+bool SMAXClient::request_post(const std::string& endpoint, uint16_t port, const std::string& json_body, std::string& result, int& status_code) const {
+    return perform_request(http::verb::post, endpoint, port, json_body, result, {{"Cookie", "SMAX_AUTH_TOKEN=" + token_info_.token}}, status_code);
 }
 
 

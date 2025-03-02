@@ -1,4 +1,2 @@
-Category,RequestedByPerson,RegisteredForActualService,Description,DisplayLabel,ImpactScope,Urgency
-10536,23097,23097,The service XYZ is unavailable on the obadb .,Service XYZ availability,SingleUser,SlightDisruption
-10536,23097,23097,The service XYZ is unavailable on the obadb .,Service XYZ availability,SingleUser,SlightDisruption
-10536,23097,23097,The service XYZ is unavailable on the obadb .,Service XYZ availability,SingleUser,SlightDisruption
+PhaseId,OfferingWorkflow,Description,ProcessId,DisplayLabel,RequestsOffering,RequestedByPerson,RequestedForPerson
+Log,6,"<p>New request</p>",Service,Request for anything,36261,24251,24251
