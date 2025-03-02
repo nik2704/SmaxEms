@@ -34,6 +34,7 @@ private:
     explicit SMAXClient(const ConnectionParameters& connection_props);
     std::string getData();
     void updateToken();
+    std::string getAuthBody() const;
     bool perform_request(boost::beast::http::verb method,
         const std::string& endpoint,
         uint16_t port, 
@@ -42,6 +43,7 @@ private:
 
     bool request_post(const std::string& endpoint, uint16_t port, const std::string& json_body, std::string& result, int& status_code) const;
     bool request_get(const std::string& endpoint, uint16_t port, std::string& result, int& status_code) const;
+    std::string getRequestInfo() const;
 };
 
 }

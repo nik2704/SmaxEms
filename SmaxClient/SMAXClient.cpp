@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "../RestClient/RestClient.h"
+#include "../Parser/Parser.h"
 #include "SMAXClient.h"
 
 using json = nlohmann::json;
@@ -57,7 +58,7 @@ std::string SMAXClient::doAction() {
     auto action = connection_props_.getAction();
 
     if (connection_props_.isVerbose()) {
-        return "Verbose";
+        return getRequestInfo();
     }
 
     if (action == "GET") {
@@ -73,6 +74,30 @@ std::string SMAXClient::doAction() {
     }
 
     return "Unsupported action";
+}
+
+std::string SMAXClient::getRequestInfo() const {
+    std::ostringstream oss;
+    std::string http_action = connection_props_.getAction() == "GET" ? "GET" : "POST";
+    json authBody = json::parse(getAuthBody());
+
+    oss << "RRequest parameters:\n"
+        << "1) Authorization URL: " << getAuthorizationUrl() << "\n"
+        << "Authorization body:\n"
+        << authBody.dump(4) << "\n\n"
+        << "2) URL: " << getEmsUrl() << "\n"
+        << "3) Action: " << connection_props_.getAction() << "\n"
+        << "4) HTTP action: <" << http_action << ">\n";
+    
+    if (connection_props_.getAction() != "GET") {
+        Parser parser(connection_props_.getCSVfilename());
+
+        auto postBody = parser.parseCSV(connection_props_.getEntity(), connection_props_.getAction());
+        oss << "5) POST Body:\n"
+        << postBody.dump(4) << "\n";
+    }
+
+    return oss.str();
 }
 
 std::string SMAXClient::getData() {
@@ -113,12 +138,15 @@ void SMAXClient::updateToken() {
     }
 }
 
-
-std::string SMAXClient::getToken() {
+std::string SMAXClient::getAuthBody() const {
     std::ostringstream json_stream;
     json_stream << R"({"login":")" << connection_props_.getUserName() << R"(", "password":")" << connection_props_.getPassword() << R"("})";
 
-    std::string json_body = json_stream.str();
+    return json_stream.str();
+}
+
+std::string SMAXClient::getToken() {
+    std::string json_body = getAuthBody();
     auto endpoint = getAuthorizationUrl();
     auto port = connection_props_.getSecurePort();
 
@@ -167,6 +195,7 @@ bool SMAXClient::perform_request(http::verb method, const std::string& endpoint,
         std::cerr << "Exception: " << e.what() << "\n";
         promise.set_value({false, "Исключение: " + std::string(e.what()), 0});
     }
+    return "Verbose";
 
     auto [success, response, http_status] = future.get();
     result = response;

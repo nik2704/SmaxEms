@@ -28,6 +28,7 @@ find_package(nlohmann_json REQUIRED)
 # Добавление исполняемого файла
 add_executable(smax_ems
     main.cpp
+    Parser/Parser.cpp
     RestClient/RestClient.cpp
     SmaxClient/ConnectionProperties.cpp
     SmaxClient/SMAXClient.cpp
