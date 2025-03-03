@@ -6,6 +6,7 @@
 
 #include "../RestClient/RestClient.h"
 #include "../Parser/Parser.h"
+#include "ConsoleSpinner.h"
 #include "SMAXClient.h"
 
 using json = nlohmann::json;
@@ -181,7 +182,28 @@ std::string SMAXClient::getAuthBody() const {
     return json_stream.str();
 }
 
+// std::string SMAXClient::getToken() {
+//     std::string json_body = getAuthBody();
+//     auto endpoint = getAuthorizationUrl();
+//     auto port = connection_props_.getSecurePort();
+
+//     std::string token;
+//     int status_code;
+
+//     bool success = auth_post(endpoint, port, json_body, token, status_code);
+
+//     if (!success || status_code != 200) {
+//         token_info_.reset();
+//         return "ERROR";
+//     }
+
+//     token_info_ = TokenInfo{token, std::chrono::system_clock::now()};
+//     return token;
+// }
+
 std::string SMAXClient::getToken() {
+    ConsoleSpinner spinner("Getting a new token");
+
     std::string json_body = getAuthBody();
     auto endpoint = getAuthorizationUrl();
     auto port = connection_props_.getSecurePort();
@@ -193,12 +215,16 @@ std::string SMAXClient::getToken() {
 
     if (!success || status_code != 200) {
         token_info_.reset();
+        spinner.setStatus("ERROR");
         return "ERROR";
     }
 
     token_info_ = TokenInfo{token, std::chrono::system_clock::now()};
+    spinner.setStatus("OK");
+
     return token;
 }
+
 
 bool SMAXClient::perform_request(http::verb method, const std::string& endpoint, uint16_t port,
                                  const std::string& body, std::string& result,
