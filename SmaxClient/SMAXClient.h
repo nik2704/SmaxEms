@@ -51,7 +51,7 @@ private:
     std::string getRequestInfo() const;
     std::string getBaseUrl() const;
     std::string parseJson(const std::string& data);
-    std::string sendRequest(const std::string& endpoint, const std::string& body, bool isPost);
+    std::string sendRequest(const std::string& endpoint, const std::string& body, bool isPost, int & result_status_code);
     int getPort() const;
 };
 

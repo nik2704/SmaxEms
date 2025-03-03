@@ -61,7 +61,10 @@ int main(int argc, char* argv[]) {
         smax_ns::ConnectionParameters& conn_params = smax_ns::ConnectionParameters::getInstance(input_values);
         smax_ns::SMAXClient& smax_client = smax_ns::SMAXClient::getInstance(conn_params);
 
-        std::cout << smax_client.doAction() << std::endl;
+        auto result = smax_client.doAction();
+        
+        std::cout << "**************Response:********************" << std::endl;
+        std::cout << result << std::endl;
 
         smax_ns::Parser parser(input_values.csv);
         parser.parseCSV(input_values.entity, input_values.action);

@@ -117,18 +117,25 @@ std::string SMAXClient::getRequestInfo() const {
 }
 
 std::string SMAXClient::postData() {
+    int status_code;
     Parser parser(connection_props_.getCSVfilename());
     auto postBody = parser.parseCSV(connection_props_.getEntity(), connection_props_.getActionAsString()).dump();
 
-    return sendRequest(getBulkPostUrl(), postBody, true);
+    return sendRequest(getBulkPostUrl(), postBody, true, status_code);
 }
 
 std::string SMAXClient::getData() {
-    return sendRequest(getEmsUrl(), "", false);
+    int status_code;
+    auto result = sendRequest(getEmsUrl(), "", false, status_code);
+    return result;
 }
 
-std::string SMAXClient::sendRequest(const std::string& endpoint, const std::string& body, bool isPost) {
+std::string SMAXClient::sendRequest(const std::string& endpoint, const std::string& body, bool isPost, int & result_status_code) {
     updateToken();
+
+    std::ostringstream oss;
+    oss << "Sending " << connection_props_.getActionAsString() << " request ";
+    ConsoleSpinner spinner(oss.str());
 
     if (!token_info_.has_value() || token_info_->token == "ERROR") {
         return "ERROR";
@@ -140,6 +147,9 @@ std::string SMAXClient::sendRequest(const std::string& endpoint, const std::stri
 
         bool success = isPost ? request_post(endpoint, getPort(), body, result, status_code)
                               : request_get(endpoint, getPort(), result, status_code);
+
+        result_status_code = status_code;
+        spinner.setStatus(std::to_string(status_code));
 
         return (success && status_code == 200) ? parseJson(result) : "ERROR";
     });
@@ -182,25 +192,6 @@ std::string SMAXClient::getAuthBody() const {
     return json_stream.str();
 }
 
-// std::string SMAXClient::getToken() {
-//     std::string json_body = getAuthBody();
-//     auto endpoint = getAuthorizationUrl();
-//     auto port = connection_props_.getSecurePort();
-
-//     std::string token;
-//     int status_code;
-
-//     bool success = auth_post(endpoint, port, json_body, token, status_code);
-
-//     if (!success || status_code != 200) {
-//         token_info_.reset();
-//         return "ERROR";
-//     }
-
-//     token_info_ = TokenInfo{token, std::chrono::system_clock::now()};
-//     return token;
-// }
-
 std::string SMAXClient::getToken() {
     ConsoleSpinner spinner("Getting a new token");
 
@@ -213,14 +204,14 @@ std::string SMAXClient::getToken() {
 
     bool success = auth_post(endpoint, port, json_body, token, status_code);
 
+    spinner.setStatus(std::to_string(status_code));
+
     if (!success || status_code != 200) {
         token_info_.reset();
-        spinner.setStatus("ERROR");
         return "ERROR";
     }
 
     token_info_ = TokenInfo{token, std::chrono::system_clock::now()};
-    spinner.setStatus("OK");
 
     return token;
 }
