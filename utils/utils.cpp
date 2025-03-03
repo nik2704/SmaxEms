@@ -44,6 +44,43 @@ std::unique_ptr<ValidationResult> validate_action(const InputValues& input) {
     return std::make_unique<ValidationResult>(ValidationResult{"Action should be GET | UPDATE | CREATE", 1});
 }
 
+std::unique_ptr<ValidationResult> validate_custom_actions(const InputValues& input) {
+    if (input.custom_action_file.empty()) {
+        return std::make_unique<ValidationResult>(ValidationResult{"Custom action file should not be EMPTY.", 1});
+    }
+
+    if (input.custom_action_field.empty()) {
+        return std::make_unique<ValidationResult>(ValidationResult{"Custom action field should not be EMPTY.", 1});
+    }
+    
+    if (!is_string_equals(input.custom_action_output, "console") && !is_string_equals(input.custom_action_output, "file")) {
+        return std::make_unique<ValidationResult>(ValidationResult{ "Acceptable action's output values are: http, https.", 1 });
+    }
+
+    if (is_string_equals(input.custom_action_output, "file")) {
+        if (input.custom_action_output_folder.empty()) {
+            return std::make_unique<ValidationResult>(ValidationResult{ "Output folder should not be empty", 1 });
+        }
+    }
+
+    if (is_string_equals(input.custom_action, "COPYJSON")) {
+        if (input.custom_action_src_id.empty()) {
+            return std::make_unique<ValidationResult>(ValidationResult{"SOURCE ID should not be EMPTY.", 1});
+        }
+
+        if (input.custom_action_tgt_id.empty()) {
+            return std::make_unique<ValidationResult>(ValidationResult{"TARGET ID should not be EMPTY.", 1});
+        }
+
+        if (is_string_equals(input.custom_action_src_id, input.custom_action_tgt_id)) {
+            return std::make_unique<ValidationResult>(ValidationResult{"SORCE ID should not be the same as TARGET ID.", 1});
+        }
+
+    }
+     
+    return std::make_unique<ValidationResult>(ValidationResult{"", 0});
+}
+
 std::unique_ptr<ValidationResult> validate_input_values(const InputValues& input) {
     if (input.host.empty()) {
         return std::make_unique<ValidationResult>(ValidationResult{"Host should not be EMPTY.", 1});
@@ -80,6 +117,12 @@ std::unique_ptr<ValidationResult> validate_input_values(const InputValues& input
 
     if (input.action != "GET" && input.csv.empty()) {
         return std::make_unique<ValidationResult>(ValidationResult{"CSV is mandatory for CREATE or UPDATE", 1});
+    }
+
+    if (input.action == "CUSTOM") {
+        output_result = validate_custom_actions(input);
+
+        if (output_result->result != 0) return output_result;
     }
 
     return std::make_unique<ValidationResult>(ValidationResult{"Paremeters are correct.", 0});

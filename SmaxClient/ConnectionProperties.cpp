@@ -56,7 +56,14 @@ ConnectionParameters::ConnectionParameters(const InputValues& input_values)
       filter_(input_values.filter),
       action_(parseAction(input_values.action)),
       csv_(input_values.csv),
-      verbose_(input_values.verbose) {}
+      verbose_(input_values.verbose),
+      custom_action_file_(input_values.custom_action_file),
+      custom_action_(input_values.custom_action),
+      custom_action_field_(input_values.custom_action_field),
+      custom_action_output_(input_values.custom_action_output),
+      custom_action_output_folder_(input_values.custom_action_output_folder),
+      custom_action_src_id_(input_values.custom_action_src_id),
+      custom_action_tgt_id_(input_values.custom_action_tgt_id) {}
 
 const std::string& ConnectionParameters::getProtocol() const { return protocol_; }
 const std::string& ConnectionParameters::getHost() const { return host_; }
@@ -72,5 +79,13 @@ const Action& ConnectionParameters::getAction() const { return action_; }
 std::string ConnectionParameters::getActionAsString() const { return actionToString(action_); }
 const std::string& ConnectionParameters::getCSVfilename() const { return csv_; }
 bool ConnectionParameters::isVerbose() const { return verbose_; }
+const std::string& ConnectionParameters::getCustomActionFile() const { return custom_action_file_; }
+const std::string& ConnectionParameters::getCustomAction() const { return custom_action_; }
+const std::string& ConnectionParameters::getCustomActionField() const { return custom_action_field_; }
+const std::string& ConnectionParameters::getCustomActionOutput() const { return custom_action_output_; }
+const std::string& ConnectionParameters::getCustomActionOutputFolder() const { return custom_action_output_folder_; }
+const std::string& ConnectionParameters::getCustomActionSrcId() const { return custom_action_src_id_; }
+const std::string& ConnectionParameters::getCustomActionTgtId() const { return custom_action_tgt_id_; }
+
 
 } // namespace smax_ns
