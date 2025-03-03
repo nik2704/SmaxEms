@@ -6,6 +6,7 @@
 
 #include "../RestClient/RestClient.h"
 #include "../Parser/Parser.h"
+#include "../utils/utils.h"
 #include "ConsoleSpinner.h"
 #include "SMAXClient.h"
 
@@ -86,32 +87,56 @@ std::string SMAXClient::doAction() {
 
 std::string SMAXClient::getRequestInfo() const {
     std::ostringstream oss;
-    // std::string http_action = "GET";
-    // auto action = connection_props_.getAction();
+    std::string http_action = "POST";
+    json authBody = json::parse(getAuthBody());
+    bool parsePostBody = true;
 
-    // if (action == Action::CREATE || action == Action::UPDATE || action == Action::CUSTOM) {   //PROCESS CUSTOM
-    //     http_action = "POST";
-    // }
+    oss << "Request parameters:\n"
+        << "1) Authorization URL: " << getAuthorizationUrl() << "\n"
+        << "Authorization body:\n"
+        << authBody.dump(4) << "\n\n";
 
-    // std::string url = http_action == "GET" ? getEmsUrl() : getBulkPostUrl();
+    auto action = connection_props_.getAction();
 
-    // json authBody = json::parse(getAuthBody());
+    switch (action) {
+    case smax_ns::Action::GET :
+        oss << "2) URL: " << getEmsUrl() << "\n";
+        http_action = "GET";
+        parsePostBody= false;
 
-    // oss << "RRequest parameters:\n"
-    //     << "1) Authorization URL: " << getAuthorizationUrl() << "\n"
-    //     << "Authorization body:\n"
-    //     << authBody.dump(4) << "\n\n"
-    //     << "2) URL: " << url << "\n"
-    //     << "3) Action: " << connection_props_.getAction() << "\n"
-    //     << "4) HTTP action: <" << http_action << ">\n";
-    
-    // if (action != "GET") {
-    //     Parser parser(connection_props_.getCSVfilename());
+        break;
+    case smax_ns::Action::CUSTOM :
+        if (is_string_equals(connection_props_.getCustomAction(), "GETJSON")) {
+            oss << "2) URL: " << getEmsUrl() << "\n";
+            http_action = "GET";
+        } else if (is_string_equals(connection_props_.getCustomAction(), "COPYJSON")) {
+            oss << "2) URLs: " << "\n"
+                << getEmsUrl() << "\n"
+                << getBulkPostUrl() << "\n";
+            http_action = "GET & POST";
+        }
 
-    //     auto postBody = parser.parseCSV(connection_props_.getEntity(), connection_props_.getAction());
-    //     oss << "5) POST Body:\n"
-    //     << postBody.dump(4) << "\n";
-    // }
+        break;
+    default:
+        oss << "2) URL: " << getBulkPostUrl() << "\n";
+
+        break;
+    }
+
+    oss << "3) Action: " << connection_props_.getActionAsString() << "\n"
+        << "4) HTTP action: <" << http_action << ">\n";
+
+    if (parsePostBody) {
+        if (action == smax_ns::Action::CREATE || action == smax_ns::Action::UPDATE) {
+            Parser parser(connection_props_.getCSVfilename());
+
+            auto postBody = parser.parseCSV(connection_props_.getEntity(), "POST");
+            oss << "5) POST Body:\n"
+            << postBody.dump(4) << "\n";
+        } else {
+            oss << "5) POST Body will be defined using the SOURCE Record\n";
+        }
+    }        
 
     return oss.str();
 }
