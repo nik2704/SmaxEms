@@ -47,7 +47,7 @@ std::string SMAXClient::getBaseUrl() const {
 
 std::string SMAXClient::getEmsJsonUrl() const {
     std::ostringstream url;
-    url << getEmsBaseUrl() << "?layout=Id," << connection_props_.getCustomActionField();
+    url << getEmsBaseUrl() << "?layout=Id," << connection_props_.getJsonActionField();
 
     return url.str();
 }
@@ -101,56 +101,56 @@ std::string SMAXClient::doAction() {
 
 std::string SMAXClient::getRequestInfo() const {
     std::ostringstream oss;
-    std::string http_action = "POST";
+    const std::string_view http_post = "POST";
+    std::string http_action = http_post.data();
+    
     json authBody = json::parse(getAuthBody());
-    bool parsePostBody = true;
 
     oss << "Request parameters:\n"
         << "1) Authorization URL: " << getAuthorizationUrl() << "\n"
-        << "Authorization body:\n"
-        << authBody.dump(4) << "\n\n";
+        << "Authorization body:\n" << authBody.dump(4) << "\n\n";
 
     auto action = connection_props_.getAction();
+    bool needs_post_body = false;
 
     switch (action) {
-    case smax_ns::Action::GET :
+    case smax_ns::Action::GET:
         oss << "2) URL: " << getEmsUrl() << "\n";
         http_action = "GET";
-        parsePostBody= false;
-
         break;
-    case smax_ns::Action::JSON :
-        if (is_string_equals(connection_props_.getCustomAction(), "GETJSON")) {
-            oss << "2) URL: " << getEmsJsonUrl() << "&filter=" << "Id='" << connection_props_.getCustomActionSrcId() << "'" << "\n";
+
+    case smax_ns::Action::JSON: {
+        std::string json_action = connection_props_.getJsonAction();
+        std::string filter_url = getEmsJsonUrl() + "&filter=Id='" + connection_props_.getJsonActionSrcId() + "'";
+
+        if (json_action == "GETJSON") {
+            oss << "2) URL: " << filter_url << "\n";
             http_action = "GET";
-        } else if (is_string_equals(connection_props_.getCustomAction(), "COPYJSON")) {
-            oss << "2) URLs: " << "\n"
-                << getEmsJsonUrl() << "&filter=" << "Id='" << connection_props_.getCustomActionSrcId() << "'" << "\n"
-                << getBulkPostUrl() << "\n";
+        } else if (json_action == "COPYJSON") {
+            oss << "2) URLs:\n" << filter_url << "\n" << getBulkPostUrl() << "\n";
             http_action = "GET & POST";
         }
-
         break;
+    }
+
     default:
         oss << "2) URL: " << getBulkPostUrl() << "\n";
-
+        needs_post_body = true;
         break;
     }
 
     oss << "3) Action: " << connection_props_.getActionAsString() << "\n"
         << "4) HTTP action: <" << http_action << ">\n";
 
-    if (parsePostBody) {
+    if (needs_post_body) {
         if (action == smax_ns::Action::CREATE || action == smax_ns::Action::UPDATE) {
             Parser parser(connection_props_.getCSVfilename());
-
-            auto postBody = parser.parseCSV(connection_props_.getEntity(), "POST");
-            oss << "5) POST Body:\n"
-            << postBody.dump(4) << "\n";
+            json postBody = parser.parseCSV(connection_props_.getEntity(), "POST");
+            oss << "5) POST Body:\n" << postBody.dump(4) << "\n";
         } else {
             oss << "5) POST Body will be defined using the SOURCE Record\n";
         }
-    }        
+    }
 
     return oss.str();
 }

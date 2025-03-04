@@ -20,7 +20,7 @@ std::unique_ptr<ValidationResult> validate_port(const InputValues& input);
 
 std::unique_ptr<ValidationResult> validate_protocol(const InputValues& input);
 
-std::unique_ptr<ValidationResult> validate_custom_actions(const InputValues& input);
+std::unique_ptr<ValidationResult> validate_json_actions(const InputValues& input);
 
 std::unique_ptr<ValidationResult> validate_input_values(const InputValues& input);
 

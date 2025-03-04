@@ -30,13 +30,13 @@ int main(int argc, char* argv[]) {
             ("tenant,t", po::value<std::size_t>(&input_values.tenant), "Tenant ID")
             ("username,U", po::value<std::string>(&input_values.username), "Username")
             ("verbose,v", po::bool_switch(&input_values.verbose)->default_value(false), "Enable verbose output")
-            ("custom-action-file", po::value<std::string>(&input_values.custom_action_file)->default_value("json_action.ini"), "Custom action file")
-            ("custom-action", po::value<std::string>(&input_values.custom_action)->default_value("GETJSON"), "Custom action")
-            ("custom-action-field", po::value<std::string>(&input_values.custom_action_field), "Custom action field")
-            ("custom-action-output", po::value<std::string>(&input_values.custom_action_output)->default_value("console"), "Custom action output")
-            ("custom-action-output-folder", po::value<std::string>(&input_values.custom_action_output_folder), "Custom action output folder")
-            ("custom-action-src-id", po::value<std::string>(&input_values.custom_action_src_id), "Custom action SOURCE ID")
-            ("custom-action-tgt-id", po::value<std::string>(&input_values.custom_action_tgt_id), "Custom action DESTINATION ID")
+            ("json-action-file", po::value<std::string>(&input_values.json_action_file)->default_value("json_action.ini"), "Json action file")
+            ("json-action", po::value<std::string>(&input_values.json_action)->default_value("GETJSON"), "Json action")
+            ("json-action-field", po::value<std::string>(&input_values.json_action_field), "Json action field")
+            ("json-action-output", po::value<std::string>(&input_values.json_action_output)->default_value("console"), "Json action output")
+            ("json-action-output-folder", po::value<std::string>(&input_values.json_action_output_folder), "Json action output folder")
+            ("json-action-src-id", po::value<std::string>(&input_values.json_action_src_id), "Json action SOURCE ID")
+            ("json-action-tgt-id", po::value<std::string>(&input_values.json_action_tgt_id), "Json action DESTINATION ID")
             ("help,h", "Help");
 
         po::variables_map vm;
@@ -52,8 +52,8 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        if (vm.count("custom-action-file")) {
-            std::ifstream config_file(vm["custom-action-file"].as<std::string>());
+        if (vm.count("json-action-file")) {
+            std::ifstream config_file(vm["json-action-file"].as<std::string>());
             if (config_file) {
                 po::store(po::parse_config_file(config_file, desc), vm);
             } else {

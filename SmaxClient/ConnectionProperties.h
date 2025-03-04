@@ -25,13 +25,13 @@ struct InputValues {
     std::string action;             ///< Action
     std::string csv;                ///< CSV for update or create records
     bool verbose;                   ///< Just information
-    std::string custom_action_file;         ///< INI file with custom actionsGETJSON  (filter is used) or COPYJSON
-    std::string custom_action;              ///< GETJSON  (filter is used) or COPYJSON
-    std::string custom_action_field;        ///< RequestAttachments, TaskPlanForApprove,TaskPlanForClassify,TaskPlanForEscalate,TaskPlanForFirstLineSupport,TaskPlanForFulfill,TaskPlanForReview
-    std::string custom_action_output;       ///< console or file
-    std::string custom_action_output_folder;///< output folder
-    std::string custom_action_src_id;       ///< source ID
-    std::string custom_action_tgt_id;       ///< target ID    
+    std::string json_action_file;         ///< INI file with json actionsGETJSON  (filter is used) or COPYJSON
+    std::string json_action;              ///< GETJSON  (filter is used) or COPYJSON
+    std::string json_action_field;        ///< RequestAttachments, TaskPlanForApprove,TaskPlanForClassify,TaskPlanForEscalate,TaskPlanForFirstLineSupport,TaskPlanForFulfill,TaskPlanForReview
+    std::string json_action_output;       ///< console or file
+    std::string json_action_output_folder;///< output folder
+    std::string json_action_src_id;       ///< source ID
+    std::string json_action_tgt_id;       ///< target ID    
 };
 
 class ConnectionParameters {
@@ -53,13 +53,13 @@ public:
     std::string getActionAsString() const;
     const std::string& getCSVfilename() const;
     bool isVerbose() const;
-    const std::string& getCustomActionFile() const;
-    const std::string& getCustomAction() const;
-    const std::string& getCustomActionField() const;
-    const std::string& getCustomActionOutput() const;
-    const std::string& getCustomActionOutputFolder() const;
-    const std::string& getCustomActionSrcId() const;
-    const std::string& getCustomActionTgtId() const;
+    const std::string& getJsonActionFile() const;
+    const std::string& getJsonAction() const;
+    const std::string& getJsonActionField() const;
+    const std::string& getJsonActionOutput() const;
+    const std::string& getJsonActionOutputFolder() const;
+    const std::string& getJsonActionSrcId() const;
+    const std::string& getJsonActionTgtId() const;
 
 
     friend std::ostream& operator<<(std::ostream& os, const ConnectionParameters& params) {
@@ -94,13 +94,13 @@ private:
     Action action_;
     std::string csv_;
     bool verbose_;
-    std::string custom_action_file_;
-    std::string custom_action_;
-    std::string custom_action_field_;
-    std::string custom_action_output_;
-    std::string custom_action_output_folder_;
-    std::string custom_action_src_id_;
-    std::string custom_action_tgt_id_;
+    std::string json_action_file_;
+    std::string json_action_;
+    std::string json_action_field_;
+    std::string json_action_output_;
+    std::string json_action_output_folder_;
+    std::string json_action_src_id_;
+    std::string json_action_tgt_id_;
 
     static std::string actionToString(Action action);
 };
