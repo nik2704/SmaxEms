@@ -90,13 +90,17 @@ std::string SMAXClient::doAction() {
         return postData();
 
     case Action::JSON:
-        return "JSON";
+        return processJsonAction();
 
     default:
         break;
     }
     
     return "Unsupported action";
+}
+
+std::string SMAXClient::processJsonAction() {
+    return "JSON";
 }
 
 std::string SMAXClient::getRequestInfo() const {
