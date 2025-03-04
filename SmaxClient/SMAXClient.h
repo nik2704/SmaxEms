@@ -25,7 +25,7 @@ public:
     SMAXClient& operator=(SMAXClient&&) = delete;
 
     std::string getAuthorizationUrl() const;
-    std::string getEmsUrl() const;
+    std::string getEmsUrl(std::string layout) const;
     std::string getEmsJsonUrl() const;
     std::string getEmsBaseUrl() const;
     std::string getBulkPostUrl() const;

@@ -1,4 +1,5 @@
 #include "ConnectionProperties.h"
+#include <sstream>
 #include <mutex>
 #include <unordered_map>
 
@@ -17,6 +18,18 @@ Action parseAction(const std::string& action_str) {
 
     auto it = action_map.find(action_str);
     return (it != action_map.end()) ? it->second : Action::UNKNOW;
+}
+
+std::vector<std::string> splitString(const std::string& input, char delimiter) {
+    std::vector<std::string> result;
+    std::stringstream ss(input);
+    std::string token;
+    
+    while (std::getline(ss, token, delimiter)) {
+        result.push_back(token);
+    }
+    
+    return result;
 }
 
 std::string ConnectionParameters::actionToString(Action action) {
@@ -60,6 +73,7 @@ ConnectionParameters::ConnectionParameters(const InputValues& input_values)
       json_action_file_(input_values.json_action_file),
       json_action_(input_values.json_action),
       json_action_field_(input_values.json_action_field),
+      json_action_fields_list_(splitString(input_values.json_action_field)),
       json_action_output_(input_values.json_action_output),
       json_action_output_folder_(input_values.json_action_output_folder),
       json_action_src_id_(input_values.json_action_src_id),

@@ -4,12 +4,14 @@
 #include <iostream>
 #include <memory>
 #include <mutex>
+#include <vector>
 
 namespace smax_ns {
 
 enum class Action { GET, CREATE, UPDATE, JSON, UNKNOW };
 
 inline Action parseAction(const std::string& action_str);
+inline std::vector<std::string> splitString(const std::string& input, char delimiter = ',');
 
 struct InputValues {
     std::string protocol;           ///< Protocol
@@ -97,6 +99,7 @@ private:
     std::string json_action_file_;
     std::string json_action_;
     std::string json_action_field_;
+    std::vector<std::string>  json_action_fields_list_;
     std::string json_action_output_;
     std::string json_action_output_folder_;
     std::string json_action_src_id_;

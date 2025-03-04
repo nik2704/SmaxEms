@@ -45,7 +45,6 @@ public:
                 return false;
             }
 
-            // Подкаталог создаем ТОЛЬКО если output_method == "file"
             fs::path subfolder_path = base_path;
             if (output_method == "file" && !subfolder_name.empty()) {
                 subfolder_path /= subfolder_name;

@@ -58,9 +58,9 @@ std::string SMAXClient::getEmsJsonUrl() const {
     return url.str();
 }
 
-std::string SMAXClient::getEmsUrl() const {
+std::string SMAXClient::getEmsUrl(std::string layout) const {
     std::ostringstream url;
-    url << getEmsBaseUrl() << "?layout=" << connection_props_.getLayout();
+    url << getEmsBaseUrl() << "?layout=" << layout;
     
     if (!connection_props_.getFilter().empty()) {
         url << "&filter=" << connection_props_.getFilter();
@@ -117,7 +117,9 @@ std::string SMAXClient::processJsonAction() {
     std::string result = "JSON";
 
     if (connection_props_.getJsonAction() == "GETJSON") {
-        auto data = getData();
+        int status_code;
+        
+        auto data = sendRequest(getEmsUrl(connection_props_.getJsonActionField()), "", false, status_code);
 
         isSuccess = saveJsonToDirectory(data);
         if (isSuccess) result = "JSON field is printed";
@@ -142,7 +144,7 @@ std::string SMAXClient::getRequestInfo() const {
 
     switch (action) {
     case smax_ns::Action::GET:
-        oss << "2) URL: " << getEmsUrl() << "\n";
+        oss << "2) URL: " << getEmsUrl(connection_props_.getLayout()) << "\n";
         http_action = "GET";
         break;
 
@@ -151,7 +153,7 @@ std::string SMAXClient::getRequestInfo() const {
         std::string filter_url = getEmsJsonUrl() + "&filter=Id='" + connection_props_.getJsonActionSrcId() + "'";
 
         if (json_action == "GETJSON") {
-            oss << "2) URL: " << getEmsUrl() << "\n";
+            oss << "2) URL: " << getEmsUrl(connection_props_.getJsonActionField()) << "\n";
             http_action = "GET";
         } else if (json_action == "COPYJSON") {
             oss << "2) URLs:\n" << filter_url << "\n" << getBulkPostUrl() << "\n";
@@ -192,7 +194,7 @@ std::string SMAXClient::postData() {
 
 std::string SMAXClient::getData() {
     int status_code;
-    auto result = sendRequest(getEmsUrl(), "", false, status_code);
+    auto result = sendRequest(getEmsUrl(connection_props_.getLayout()), "", false, status_code);
     return result;
 }
 
