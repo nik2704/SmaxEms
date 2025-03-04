@@ -45,13 +45,27 @@ std::string SMAXClient::getBaseUrl() const {
     return url.str();
 }
 
+std::string SMAXClient::getEmsJsonUrl() const {
+    std::ostringstream url;
+    url << getEmsBaseUrl() << "?layout=Id," << connection_props_.getCustomActionField();
+
+    return url.str();
+}
+
 std::string SMAXClient::getEmsUrl() const {
     std::ostringstream url;
-    url << getBaseUrl() << "/" << connection_props_.getEntity() << "?layout=" << connection_props_.getLayout();
+    url << getEmsBaseUrl() << "?layout=" << connection_props_.getLayout();
     
     if (!connection_props_.getFilter().empty()) {
         url << "&filter=" << connection_props_.getFilter();
     }
+
+    return url.str();
+}
+
+std::string SMAXClient::getEmsBaseUrl() const {
+    std::ostringstream url;
+    url << getBaseUrl() << "/" << connection_props_.getEntity();
 
     return url.str();
 }
@@ -75,8 +89,8 @@ std::string SMAXClient::doAction() {
     case Action::UPDATE:
         return postData();
 
-    case Action::CUSTOM:
-        return "CUSTOM";
+    case Action::JSON:
+        return "JSON";
 
     default:
         break;
@@ -105,13 +119,13 @@ std::string SMAXClient::getRequestInfo() const {
         parsePostBody= false;
 
         break;
-    case smax_ns::Action::CUSTOM :
+    case smax_ns::Action::JSON :
         if (is_string_equals(connection_props_.getCustomAction(), "GETJSON")) {
-            oss << "2) URL: " << getEmsUrl() << "\n";
+            oss << "2) URL: " << getEmsJsonUrl() << "&filter=" << "Id='" << connection_props_.getCustomActionSrcId() << "'" << "\n";
             http_action = "GET";
         } else if (is_string_equals(connection_props_.getCustomAction(), "COPYJSON")) {
             oss << "2) URLs: " << "\n"
-                << getEmsUrl() << "\n"
+                << getEmsJsonUrl() << "&filter=" << "Id='" << connection_props_.getCustomActionSrcId() << "'" << "\n"
                 << getBulkPostUrl() << "\n";
             http_action = "GET & POST";
         }

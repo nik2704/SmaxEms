@@ -24,6 +24,8 @@ public:
 
     std::string getAuthorizationUrl() const;
     std::string getEmsUrl() const;
+    std::string getEmsJsonUrl() const;
+    std::string getEmsBaseUrl() const;
     std::string getBulkPostUrl() const;
     std::string doAction();
     std::string getToken();

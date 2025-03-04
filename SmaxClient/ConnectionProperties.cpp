@@ -11,7 +11,7 @@ Action parseAction(const std::string& action_str) {
     static const std::unordered_map<std::string, Action> action_map = {
         {"GET", Action::GET},
         {"CREATE", Action::CREATE},
-        {"CUSTOM", Action::CUSTOM},
+        {"JSON", Action::JSON},
         {"UPDATE", Action::UPDATE}
     };
 
@@ -23,7 +23,7 @@ std::string ConnectionParameters::actionToString(Action action) {
     switch (action) {
         case Action::GET: return "GET";
         case Action::CREATE: return "CREATE";
-        case Action::CUSTOM: return "CUSTOM";
+        case Action::JSON: return "JSON";
         case Action::UPDATE: return "UPDATE";
         default: return "UNKNOWN";
     }

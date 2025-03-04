@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 
         po::options_description desc("Options", 120);
         desc.add_options()
-            ("action", po::value<std::string>(&input_values.action)->required()->default_value("GET"), "Action (GET is default, CREATE, UPDATE)")
+            ("action", po::value<std::string>(&input_values.action)->required()->default_value("GET"), "Action (GET is default, CREATE, UPDATE, JSON)")
             ("config-file", po::value<std::string>(), "Full name if a config file")
             ("csv", po::value<std::string>(&input_values.csv), "CSV file name (required if action is not GET)")
             ("entity,e", po::value<std::string>(&input_values.entity)->default_value("Request"), "Entity name")
@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
             ("tenant,t", po::value<std::size_t>(&input_values.tenant), "Tenant ID")
             ("username,U", po::value<std::string>(&input_values.username), "Username")
             ("verbose,v", po::bool_switch(&input_values.verbose)->default_value(false), "Enable verbose output")
-            ("custom-action-file", po::value<std::string>(&input_values.custom_action_file)->default_value("custom_action.ini"), "Custom action file")
+            ("custom-action-file", po::value<std::string>(&input_values.custom_action_file)->default_value("json_action.ini"), "Custom action file")
             ("custom-action", po::value<std::string>(&input_values.custom_action)->default_value("GETJSON"), "Custom action")
             ("custom-action-field", po::value<std::string>(&input_values.custom_action_field), "Custom action field")
             ("custom-action-output", po::value<std::string>(&input_values.custom_action_output)->default_value("console"), "Custom action output")

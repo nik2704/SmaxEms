@@ -7,7 +7,7 @@
 
 namespace smax_ns {
 
-enum class Action { GET, CREATE, UPDATE, CUSTOM, UNKNOW };
+enum class Action { GET, CREATE, UPDATE, JSON, UNKNOW };
 
 inline Action parseAction(const std::string& action_str);
 
