@@ -27,6 +27,16 @@ public:
         return fs::is_empty(subfolder_path);
     }
 
+    bool dumpJson(const std::string& json_str, const std::string& subfolder_name, const std::string& output_method) {
+        try {
+            json parsed_json = json::parse(json_str);
+            return dumpJson(parsed_json, subfolder_name, output_method);
+        } catch (const json::exception& e) {
+            std::cerr << "JSON parsing error: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
     bool dumpJson(const json& dblf, const std::string& subfolder_name, const std::string& output_method) {
         std::lock_guard<std::mutex> lock(mutex_);
         try {
@@ -34,12 +44,16 @@ public:
                 std::cerr << "Error: JSON does not contain 'entities' array." << std::endl;
                 return false;
             }
-            
-            fs::path subfolder_path = base_path / subfolder_name;
-            if (!fs::exists(subfolder_path)) {
-                fs::create_directories(subfolder_path);
+
+            // Подкаталог создаем ТОЛЬКО если output_method == "file"
+            fs::path subfolder_path = base_path;
+            if (output_method == "file" && !subfolder_name.empty()) {
+                subfolder_path /= subfolder_name;
+                if (!fs::exists(subfolder_path)) {
+                    fs::create_directories(subfolder_path);
+                }
             }
-            
+
             if (output_method == "console") {
                 std::cout << dblf.dump(4) << std::endl;
             } else if (output_method == "file") {
@@ -48,10 +62,10 @@ public:
                         std::cerr << "Error: Entity does not contain 'Id' property." << std::endl;
                         continue;
                     }
-                    
+
                     std::string id = entity["properties"]["Id"].get<std::string>();
                     fs::path file_path = subfolder_path / (id + ".json");
-                    
+
                     std::ofstream out_file(file_path);
                     if (!out_file) {
                         std::cerr << "Error: Could not create file " << file_path << std::endl;
@@ -64,7 +78,7 @@ public:
                 std::cerr << "Error: Invalid output method." << std::endl;
                 return false;
             }
-            
+
             return true;
         } catch (const std::exception& e) {
             std::cerr << "Exception: " << e.what() << std::endl;
@@ -76,14 +90,17 @@ private:
     fs::path base_path;
     std::mutex mutex_;
 
-    explicit DirectoryHandler(const std::string& full_path) : base_path(full_path) {
+    explicit DirectoryHandler(const std::string& full_path) {
+        fs::path path(full_path);
+        // std::cout << full_path << std::endl;
+        base_path = path.is_absolute() ? path : fs::absolute(path);
         if (!fs::exists(base_path)) {
             fs::create_directories(base_path);
         }
     }
-    
+
     DirectoryHandler(const DirectoryHandler&) = delete;
     DirectoryHandler& operator=(const DirectoryHandler&) = delete;
 };
 
-} // namespase smax_ns
+} // namespace smax_ns

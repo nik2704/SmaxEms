@@ -41,7 +41,7 @@ private:
     explicit SMAXClient(const ConnectionParameters& connection_props);
     std::string getData();
     std::string postData();
-    bool saveJsonToDirectory(const nlohmann::json& json_data, const std::string& subfolder, const std::string& output_method) const;
+    bool saveJsonToDirectory(const std::string& data) const;
     std::string processJsonAction();
     void updateToken();
     std::string getAuthBody() const;

@@ -28,10 +28,9 @@ SMAXClient::SMAXClient(const ConnectionParameters& connection_props)
     : connection_props_(connection_props),
       directory_handler_(nullptr) {
     if (connection_props_.getAction() == Action::JSON) {
-        directory_handler_ = &DirectoryHandler::getInstance(connection_props_.getJsonActionOutput());
+        directory_handler_ = &DirectoryHandler::getInstance(connection_props_.getJsonActionOutputFolder());
     }
 }
-
 
 std::string SMAXClient::getAuthorizationUrl() const {
     return connection_props_.getProtocol() + "://" + connection_props_.getHost() +
@@ -106,15 +105,25 @@ std::string SMAXClient::doAction() {
     return "Unsupported action";
 }
 
-bool SMAXClient::saveJsonToDirectory(const nlohmann::json& json_data, const std::string& subfolder, const std::string& output_method) const {
+bool SMAXClient::saveJsonToDirectory(const std::string& data) const {
     if (directory_handler_) {
-        return directory_handler_->dumpJson(json_data, subfolder, output_method);
+        return directory_handler_->dumpJson(data, "json_field", connection_props_.getJsonActionOutput());
     }
     return false;
 }
 
 std::string SMAXClient::processJsonAction() {
-    return "JSON";
+    bool isSuccess;
+    std::string result = "JSON";
+
+    if (connection_props_.getJsonAction() == "GETJSON") {
+        auto data = getData();
+
+        isSuccess = saveJsonToDirectory(data);
+        if (isSuccess) result = "JSON field is printed";
+    }
+
+    return result;
 }
 
 std::string SMAXClient::getRequestInfo() const {
@@ -142,7 +151,7 @@ std::string SMAXClient::getRequestInfo() const {
         std::string filter_url = getEmsJsonUrl() + "&filter=Id='" + connection_props_.getJsonActionSrcId() + "'";
 
         if (json_action == "GETJSON") {
-            oss << "2) URL: " << filter_url << "\n";
+            oss << "2) URL: " << getEmsUrl() << "\n";
             http_action = "GET";
         } else if (json_action == "COPYJSON") {
             oss << "2) URLs:\n" << filter_url << "\n" << getBulkPostUrl() << "\n";
