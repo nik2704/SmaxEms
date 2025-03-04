@@ -39,6 +39,7 @@ private:
     DirectoryHandler* directory_handler_;
 
     explicit SMAXClient(const ConnectionParameters& connection_props);
+    std::string url_encode(const std::string& value) const;
     std::string getData();
     std::string postData();
     bool saveJsonToDirectory(const std::string& data) const;

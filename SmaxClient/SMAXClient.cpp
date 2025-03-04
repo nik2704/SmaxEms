@@ -41,6 +41,24 @@ std::string SMAXClient::getAuthorizationUrl() const {
            "/auth/authentication-endpoint/authenticate/login?TENANTID=" + std::to_string(connection_props_.getTenant());
 }
 
+std::string SMAXClient::url_encode(const std::string& value) const {
+    std::ostringstream encoded;
+    encoded.fill('0');
+    encoded << std::hex;
+
+    for (size_t i = 0; i < value.size(); ++i) {
+        char c = value[i];
+        
+        if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+            encoded << c;
+        } else {
+            encoded << '%' << std::uppercase << std::setw(2) << int((unsigned char)c);
+        }
+    }
+
+    return encoded.str();
+}
+
 std::string SMAXClient::getBaseUrl() const {
     std::ostringstream url;
     url << connection_props_.getProtocol() << "://" << connection_props_.getHost();
@@ -66,7 +84,7 @@ std::string SMAXClient::getEmsUrl(std::string layout) const {
     url << getEmsBaseUrl() << "?layout=" << layout;
     
     if (!connection_props_.getFilter().empty()) {
-        url << "&filter=" << connection_props_.getFilter();
+        url << "&filter=" << url_encode(connection_props_.getFilter());
     }
 
     return url.str();
@@ -153,12 +171,13 @@ std::string SMAXClient::getRequestInfo() const {
 
     case smax_ns::Action::JSON: {
         std::string json_action = connection_props_.getJsonAction();
-        std::string filter_url = getEmsJsonUrl() + "&filter=Id='" + connection_props_.getJsonActionSrcId() + "'";
 
         if (json_action == "GETJSON") {
             oss << "2) URL: " << getEmsUrl(connection_props_.getJsonActionField()) << "\n";
             http_action = "GET";
         } else if (json_action == "COPYJSON") {
+            std::string filter_url = getEmsJsonUrl() + "&filter=Id='" + connection_props_.getJsonActionSrcId() + "'";
+
             oss << "2) URLs:\n" << filter_url << "\n" << getBulkPostUrl() << "\n";
             http_action = "GET & POST";
         }

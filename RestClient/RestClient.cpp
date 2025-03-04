@@ -11,14 +11,19 @@ void RestClient::run(const std::string& target, http::verb method,
     req_.target(target);
     req_.version(11);
     req_.set(http::field::host, host_);
-    req_.set(http::field::user_agent, "application/json");
 
+    req_.set(http::field::connection, "keep-alive");
+    req_.set(http::field::user_agent, "Apache-HttpClient/4.1");
+    req_.set(http::field::accept, "*/*");
+    req_.set(http::field::content_type, "application/json");
+
+    req_.set(http::field::user_agent, "application/json");
+    
     for (const auto& [key, value] : headers) {
         req_.set(key, value);
     }
 
     if (!body.empty()) {
-        req_.set(http::field::content_type, "application/json");
         req_.body() = body;
         req_.prepare_payload();
     }
