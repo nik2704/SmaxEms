@@ -11,7 +11,7 @@ namespace smax_ns {
 enum class Action { GET, CREATE, UPDATE, JSON, UNKNOW };
 
 inline Action parseAction(const std::string& action_str);
-inline std::vector<std::string> splitString(const std::string& input, char delimiter = ',');
+inline std::shared_ptr<std::vector<std::string>> splitString(const std::string& input, char delimiter  = ',');
 
 struct InputValues {
     std::string protocol;           ///< Protocol
@@ -62,7 +62,7 @@ public:
     const std::string& getJsonActionOutputFolder() const;
     const std::string& getJsonActionSrcId() const;
     const std::string& getJsonActionTgtId() const;
-
+    const std::shared_ptr<std::vector<std::string>>& getJsonActionFieldsList() const;
 
     friend std::ostream& operator<<(std::ostream& os, const ConnectionParameters& params) {
         os << "Protocol: " << params.protocol_ << "\n"
@@ -99,7 +99,7 @@ private:
     std::string json_action_file_;
     std::string json_action_;
     std::string json_action_field_;
-    std::vector<std::string>  json_action_fields_list_;
+    std::shared_ptr<std::vector<std::string>> json_action_fields_list_;
     std::string json_action_output_;
     std::string json_action_output_folder_;
     std::string json_action_src_id_;

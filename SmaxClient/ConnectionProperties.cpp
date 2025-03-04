@@ -20,13 +20,13 @@ Action parseAction(const std::string& action_str) {
     return (it != action_map.end()) ? it->second : Action::UNKNOW;
 }
 
-std::vector<std::string> splitString(const std::string& input, char delimiter) {
-    std::vector<std::string> result;
+std::shared_ptr<std::vector<std::string>> splitString(const std::string& input, char delimiter) {
+    auto result = std::make_shared<std::vector<std::string>>();
     std::stringstream ss(input);
     std::string token;
     
     while (std::getline(ss, token, delimiter)) {
-        result.push_back(token);
+        result->push_back(token);
     }
     
     return result;
@@ -100,6 +100,10 @@ const std::string& ConnectionParameters::getJsonActionOutput() const { return js
 const std::string& ConnectionParameters::getJsonActionOutputFolder() const { return json_action_output_folder_; }
 const std::string& ConnectionParameters::getJsonActionSrcId() const { return json_action_src_id_; }
 const std::string& ConnectionParameters::getJsonActionTgtId() const { return json_action_tgt_id_; }
+const std::shared_ptr<std::vector<std::string>>& ConnectionParameters::getJsonActionFieldsList() const {
+    return json_action_fields_list_;
+}
+
 
 
 } // namespace smax_ns
