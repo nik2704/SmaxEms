@@ -24,7 +24,14 @@ SMAXClient& SMAXClient::getInstance(const ConnectionParameters& connection_props
     return *instance_;
 }
 
-SMAXClient::SMAXClient(const ConnectionParameters& connection_props) : connection_props_(connection_props) {}
+SMAXClient::SMAXClient(const ConnectionParameters& connection_props)
+    : connection_props_(connection_props),
+      directory_handler_(nullptr) {
+    if (connection_props_.getAction() == Action::JSON) {
+        directory_handler_ = &DirectoryHandler::getInstance(connection_props_.getJsonActionOutput());
+    }
+}
+
 
 std::string SMAXClient::getAuthorizationUrl() const {
     return connection_props_.getProtocol() + "://" + connection_props_.getHost() +
@@ -97,6 +104,13 @@ std::string SMAXClient::doAction() {
     }
     
     return "Unsupported action";
+}
+
+bool SMAXClient::saveJsonToDirectory(const nlohmann::json& json_data, const std::string& subfolder, const std::string& output_method) const {
+    if (directory_handler_) {
+        return directory_handler_->dumpJson(json_data, subfolder, output_method);
+    }
+    return false;
 }
 
 std::string SMAXClient::processJsonAction() {

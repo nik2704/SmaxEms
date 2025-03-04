@@ -2,7 +2,9 @@
 
 #include <optional>
 #include <boost/beast/http.hpp>
+#include <memory>
 #include "ConnectionProperties.h"
+#include "DirectoryHandler.h"
 
 namespace smax_ns {
 
@@ -34,11 +36,12 @@ private:
     static std::unique_ptr<SMAXClient> instance_;
     static std::once_flag init_flag_;
     std::optional<TokenInfo> token_info_;
-
+    DirectoryHandler* directory_handler_;
 
     explicit SMAXClient(const ConnectionParameters& connection_props);
     std::string getData();
     std::string postData();
+    bool saveJsonToDirectory(const nlohmann::json& json_data, const std::string& subfolder, const std::string& output_method) const;
     std::string processJsonAction();
     void updateToken();
     std::string getAuthBody() const;
