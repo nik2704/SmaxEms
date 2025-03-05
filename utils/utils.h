@@ -27,6 +27,8 @@ std::unique_ptr<ValidationResult> validate_protocol(const InputValues& input);
 
 std::unique_ptr<ValidationResult> validate_json_actions(const InputValues& input);
 
+std::unique_ptr<ValidationResult> validate_attachments_actions(const InputValues& input);
+
 std::unique_ptr<ValidationResult> validate_input_values(const InputValues& input);
 
 bool parse_options(int argc, char* argv[], smax_ns::InputValues& input_values, po::variables_map& vm);

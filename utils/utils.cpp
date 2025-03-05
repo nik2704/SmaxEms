@@ -37,11 +37,11 @@ std::unique_ptr<ValidationResult> validate_protocol(const InputValues& input) {
 }
 
 std::unique_ptr<ValidationResult> validate_action(const InputValues& input) {
-    if (input.action == "GET" || input.action == "CREATE" || input.action == "UPDATE" || input.action == "JSON") {
+    if (input.action == "GET" || input.action == "CREATE" || input.action == "UPDATE" || input.action == "JSON" || input.action == "GETATTACHMENTS") {
         return std::make_unique<ValidationResult>(ValidationResult{"", 0});
     }
 
-    return std::make_unique<ValidationResult>(ValidationResult{"Action should be GET | UPDATE | CREATE | JSON", 1});
+    return std::make_unique<ValidationResult>(ValidationResult{"Action should be GET | UPDATE | CREATE | JSON | GETATTACHMENTS", 1});
 }
 
 std::unique_ptr<ValidationResult> validate_json_actions(const InputValues& input) {
@@ -57,6 +57,26 @@ std::unique_ptr<ValidationResult> validate_json_actions(const InputValues& input
         if (input.json_action_output_folder.empty()) {
             return std::make_unique<ValidationResult>(ValidationResult{ "Output folder should not be empty", 1 });
         }
+    }
+
+    return std::make_unique<ValidationResult>(ValidationResult{"", 0});
+}
+
+std::unique_ptr<ValidationResult> validate_attachments_actions(const InputValues& input) {
+    if (input.att_action_field.empty()) {
+        return std::make_unique<ValidationResult>(ValidationResult{"Attachment field should not be EMPTY.", 1});
+    }
+
+    if (input.att_action_output_folder.empty()) {
+        return std::make_unique<ValidationResult>(ValidationResult{"Attachment folder parameter should not be EMPTY.", 1});
+    }
+
+    if (!is_string_equals(input.att_action_output, "console") && !is_string_equals(input.att_action_output, "file")) {
+        return std::make_unique<ValidationResult>(ValidationResult{ "Acceptable action's output values are: file, console.", 1 });
+    }
+
+    if (!is_string_equals(input.att_action_output_mode, "list") && !is_string_equals(input.att_action_output, "content")) {
+        return std::make_unique<ValidationResult>(ValidationResult{ "Acceptable mode's output values are: list, content.", 1 });
     }
 
     return std::make_unique<ValidationResult>(ValidationResult{"", 0});
@@ -106,6 +126,12 @@ std::unique_ptr<ValidationResult> validate_input_values(const InputValues& input
         if (output_result->result != 0) return output_result;
     }
 
+    if (input.action == "GETATTACHMENTS") {
+        output_result = validate_attachments_actions(input);
+
+        if (output_result->result != 0) return output_result;
+    }
+
     return std::make_unique<ValidationResult>(ValidationResult{"Paremeters are correct.", 0});
 }
 
@@ -130,6 +156,10 @@ bool parse_options(int argc, char* argv[], smax_ns::InputValues& input_values, p
         ("json-action-field", po::value<std::string>(&input_values.json_action_field), "Json action field")
         ("json-action-output", po::value<std::string>(&input_values.json_action_output)->default_value("console"), "Json action output")
         ("json-action-output-folder", po::value<std::string>(&input_values.json_action_output_folder), "Json action output folder")
+        ("att-action-output", po::value<std::string>(&input_values.att_action_output)->default_value("console"), "Json action output")
+        ("att-action-output-mode", po::value<std::string>(&input_values.att_action_output_mode)->default_value("list"), "list or content")
+        ("att_action_field", po::value<std::string>(&input_values.att_action_field), "Field with attachments")
+        ("att-action-output-folder", po::value<std::string>(&input_values.att_action_output_folder), "Attachments action output folder")
         ("help,h", "Help");
 
     po::store(po::parse_command_line(argc, argv, desc), vm);

@@ -13,7 +13,8 @@ Action parseAction(const std::string& action_str) {
         {"GET", Action::GET},
         {"CREATE", Action::CREATE},
         {"JSON", Action::JSON},
-        {"UPDATE", Action::UPDATE}
+        {"UPDATE", Action::UPDATE},
+        {"GETATTACHMENTS", Action::GETATTACHMENTS}
     };
 
     auto it = action_map.find(action_str);
@@ -38,6 +39,7 @@ std::string ConnectionParameters::actionToString(Action action) {
         case Action::CREATE: return "CREATE";
         case Action::JSON: return "JSON";
         case Action::UPDATE: return "UPDATE";
+        case Action::GETATTACHMENTS: return "GETATTACHMENTS";
         default: return "UNKNOWN";
     }
 }
@@ -73,7 +75,11 @@ ConnectionParameters::ConnectionParameters(const InputValues& input_values)
       json_action_field_(input_values.json_action_field),
       json_action_fields_list_(splitString(input_values.json_action_field)),
       json_action_output_(input_values.json_action_output),
-      json_action_output_folder_(input_values.json_action_output_folder) {}
+      json_action_output_folder_(input_values.json_action_output_folder),
+      att_action_output_(input_values.att_action_output),
+      att_action_output_mode_(input_values.att_action_output_mode),
+      att_action_field_(input_values.att_action_field),
+      att_action_output_folder_(input_values.att_action_output_folder) {}
 
 const std::string& ConnectionParameters::getProtocol() const { return protocol_; }
 const std::string& ConnectionParameters::getHost() const { return host_; }
@@ -92,10 +98,10 @@ bool ConnectionParameters::isVerbose() const { return verbose_; }
 const std::string& ConnectionParameters::getJsonActionField() const { return json_action_field_; }
 const std::string& ConnectionParameters::getJsonActionOutput() const { return json_action_output_; }
 const std::string& ConnectionParameters::getJsonActionOutputFolder() const { return json_action_output_folder_; }
-const std::shared_ptr<std::vector<std::string>>& ConnectionParameters::getJsonActionFieldsList() const {
-    return json_action_fields_list_;
-}
-
-
+const std::shared_ptr<std::vector<std::string>>& ConnectionParameters::getJsonActionFieldsList() const { return json_action_fields_list_; }
+const std::string& ConnectionParameters::getAttActionOutput() const { return att_action_output_; }
+const std::string& ConnectionParameters::getAttActionOutputMode() const { return att_action_output_mode_; }
+const std::string& ConnectionParameters::getAttActionField() const { return att_action_field_; }
+const std::string& ConnectionParameters::getAttActionOutputFolder() const { return att_action_output_folder_; }    
 
 } // namespace smax_ns

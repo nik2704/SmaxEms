@@ -119,6 +119,9 @@ std::string SMAXClient::doAction() {
     case Action::JSON:
         return processJsonAction();
 
+    case Action::GETATTACHMENTS:
+        return "GETATTACHMENTS";
+        
     default:
         break;
     }
