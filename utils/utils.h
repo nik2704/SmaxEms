@@ -1,9 +1,14 @@
 #pragma once
 
+#include <boost/program_options.hpp>
+#include <boost/asio.hpp>
 #include <cstdint>
 #include <memory>
 #include <string>
 #include "../SmaxClient/ConnectionProperties.h"
+
+
+namespace po = boost::program_options;
 
 namespace smax_ns {
 
@@ -23,5 +28,7 @@ std::unique_ptr<ValidationResult> validate_protocol(const InputValues& input);
 std::unique_ptr<ValidationResult> validate_json_actions(const InputValues& input);
 
 std::unique_ptr<ValidationResult> validate_input_values(const InputValues& input);
+
+bool parse_options(int argc, char* argv[], smax_ns::InputValues& input_values, po::variables_map& vm);
 
 } // namespace smax_ns

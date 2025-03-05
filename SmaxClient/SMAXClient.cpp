@@ -135,16 +135,13 @@ bool SMAXClient::saveJsonToDirectory(const std::string& data) const {
 
 std::string SMAXClient::processJsonAction() {
     bool isSuccess;
+    int status_code;
     std::string result = "JSON";
+    
+    auto data = sendRequest(getEmsUrl(connection_props_.getJsonActionField()), "", false, status_code);
 
-    if (connection_props_.getJsonAction() == "GETJSON") {
-        int status_code;
-        
-        auto data = sendRequest(getEmsUrl(connection_props_.getJsonActionField()), "", false, status_code);
-
-        isSuccess = saveJsonToDirectory(data);
-        if (isSuccess) result = "JSON field is printed";
-    }
+    isSuccess = saveJsonToDirectory(data);
+    if (isSuccess) result = "JSON field is printed";
 
     return result;
 }
@@ -169,20 +166,11 @@ std::string SMAXClient::getRequestInfo() const {
         http_action = "GET";
         break;
 
-    case smax_ns::Action::JSON: {
-        std::string json_action = connection_props_.getJsonAction();
+    case smax_ns::Action::JSON:
+        oss << "2) URL: " << getEmsUrl(connection_props_.getJsonActionField()) << "\n";
+        http_action = "GET";
 
-        if (json_action == "GETJSON") {
-            oss << "2) URL: " << getEmsUrl(connection_props_.getJsonActionField()) << "\n";
-            http_action = "GET";
-        } else if (json_action == "COPYJSON") {
-            std::string filter_url = getEmsJsonUrl() + "&filter=Id='" + connection_props_.getJsonActionSrcId() + "'";
-
-            oss << "2) URLs:\n" << filter_url << "\n" << getBulkPostUrl() << "\n";
-            http_action = "GET & POST";
-        }
         break;
-    }
 
     default:
         oss << "2) URL: " << getBulkPostUrl() << "\n";

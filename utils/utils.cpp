@@ -1,11 +1,11 @@
-#include <memory>
-#include <string>
-#include <boost/asio.hpp>
-#include <future>
+#include <fstream>
 #include <iostream>
+#include <string>
 
 #include "../SmaxClient/ConnectionProperties.h"
 #include "utils.h"
+
+namespace po = boost::program_options;
 
 namespace smax_ns {
 
@@ -45,10 +45,6 @@ std::unique_ptr<ValidationResult> validate_action(const InputValues& input) {
 }
 
 std::unique_ptr<ValidationResult> validate_json_actions(const InputValues& input) {
-    if (input.json_action_file.empty()) {
-        return std::make_unique<ValidationResult>(ValidationResult{"Json action file should not be EMPTY.", 1});
-    }
-
     if (input.json_action_field.empty()) {
         return std::make_unique<ValidationResult>(ValidationResult{"Json action field should not be EMPTY.", 1});
     }
@@ -63,21 +59,6 @@ std::unique_ptr<ValidationResult> validate_json_actions(const InputValues& input
         }
     }
 
-    if (is_string_equals(input.json_action, "COPYJSON")) {
-        if (input.json_action_src_id.empty()) {
-            return std::make_unique<ValidationResult>(ValidationResult{"SOURCE ID should not be EMPTY.", 1});
-        }
-
-        if (input.json_action_tgt_id.empty()) {
-            return std::make_unique<ValidationResult>(ValidationResult{"TARGET ID should not be EMPTY.", 1});
-        }
-
-        if (is_string_equals(input.json_action_src_id, input.json_action_tgt_id)) {
-            return std::make_unique<ValidationResult>(ValidationResult{"SORCE ID should not be the same as TARGET ID.", 1});
-        }
-
-    }
-     
     return std::make_unique<ValidationResult>(ValidationResult{"", 0});
 }
 
@@ -126,6 +107,50 @@ std::unique_ptr<ValidationResult> validate_input_values(const InputValues& input
     }
 
     return std::make_unique<ValidationResult>(ValidationResult{"Paremeters are correct.", 0});
+}
+
+bool parse_options(int argc, char* argv[], smax_ns::InputValues& input_values, po::variables_map& vm) {
+    po::options_description desc("Options", 120);
+    desc.add_options()
+        ("action", po::value<std::string>(&input_values.action)->required()->default_value("GET"), 
+         "Action (GET is default, CREATE, UPDATE, JSON)")
+        ("config-file", po::value<std::string>(), "Full name of a config file")
+        ("csv", po::value<std::string>(&input_values.csv), "CSV file name (required if action is not GET)")
+        ("entity,e", po::value<std::string>(&input_values.entity)->default_value("Request"), "Entity name")
+        ("filter", po::value<std::string>(&input_values.filter), "Filter (like \"Id='52641'\")")
+        ("layout,l", po::value<std::string>(&input_values.layout)->default_value("Id,DisplayLabel"), "Layout (fields)")
+        ("password,P", po::value<std::string>(&input_values.password), "Password")
+        ("smax-protocol,p", po::value<std::string>(&input_values.protocol)->default_value("https"), "Protocol (http | https default)")
+        ("smax-host,s", po::value<std::string>(&input_values.host), "FQDN of SMAX server")
+        ("smax-port,c", po::value<uint16_t>(&input_values.port)->default_value(80), "Connection port (80 is default)")
+        ("smax-secure-port,z", po::value<uint16_t>(&input_values.secure_port)->default_value(443), "HTTPS port (443 is default)")
+        ("tenant,t", po::value<std::size_t>(&input_values.tenant), "Tenant ID")
+        ("username,U", po::value<std::string>(&input_values.username), "Username")
+        ("verbose,v", po::bool_switch(&input_values.verbose)->default_value(false), "Enable verbose output")
+        ("json-action-field", po::value<std::string>(&input_values.json_action_field), "Json action field")
+        ("json-action-output", po::value<std::string>(&input_values.json_action_output)->default_value("console"), "Json action output")
+        ("json-action-output-folder", po::value<std::string>(&input_values.json_action_output_folder), "Json action output folder")
+        ("help,h", "Help");
+
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+
+    if (vm.count("config-file")) {
+        std::ifstream config_file(vm["config-file"].as<std::string>());
+        if (config_file) {
+            po::store(po::parse_config_file(config_file, desc), vm);
+        } else {
+            std::cerr << "ERROR: impossible to open the config file.\n";
+            return false;
+        }
+    }
+
+    if (vm.count("help")) {
+        std::cout << desc << "\n";
+        return false;
+    }
+
+    po::notify(vm);
+    return true;
 }
 
 }

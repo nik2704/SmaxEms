@@ -70,14 +70,10 @@ ConnectionParameters::ConnectionParameters(const InputValues& input_values)
       action_(parseAction(input_values.action)),
       csv_(input_values.csv),
       verbose_(input_values.verbose),
-      json_action_file_(input_values.json_action_file),
-      json_action_(input_values.json_action),
       json_action_field_(input_values.json_action_field),
       json_action_fields_list_(splitString(input_values.json_action_field)),
       json_action_output_(input_values.json_action_output),
-      json_action_output_folder_(input_values.json_action_output_folder),
-      json_action_src_id_(input_values.json_action_src_id),
-      json_action_tgt_id_(input_values.json_action_tgt_id) {}
+      json_action_output_folder_(input_values.json_action_output_folder) {}
 
 const std::string& ConnectionParameters::getProtocol() const { return protocol_; }
 const std::string& ConnectionParameters::getHost() const { return host_; }
@@ -93,13 +89,9 @@ const Action& ConnectionParameters::getAction() const { return action_; }
 std::string ConnectionParameters::getActionAsString() const { return actionToString(action_); }
 const std::string& ConnectionParameters::getCSVfilename() const { return csv_; }
 bool ConnectionParameters::isVerbose() const { return verbose_; }
-const std::string& ConnectionParameters::getJsonActionFile() const { return json_action_file_; }
-const std::string& ConnectionParameters::getJsonAction() const { return json_action_; }
 const std::string& ConnectionParameters::getJsonActionField() const { return json_action_field_; }
 const std::string& ConnectionParameters::getJsonActionOutput() const { return json_action_output_; }
 const std::string& ConnectionParameters::getJsonActionOutputFolder() const { return json_action_output_folder_; }
-const std::string& ConnectionParameters::getJsonActionSrcId() const { return json_action_src_id_; }
-const std::string& ConnectionParameters::getJsonActionTgtId() const { return json_action_tgt_id_; }
 const std::shared_ptr<std::vector<std::string>>& ConnectionParameters::getJsonActionFieldsList() const {
     return json_action_fields_list_;
 }
