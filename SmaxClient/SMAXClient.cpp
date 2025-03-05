@@ -59,6 +59,14 @@ std::string SMAXClient::url_encode(const std::string& value) const {
     return encoded.str();
 }
 
+std::string SMAXClient::getFrsUrl(std::string file_id) const {
+    std::ostringstream url;
+    url << getBaseUrl();
+
+    url << "/frs/file-list/" << file_id;
+    return url.str();
+}
+
 std::string SMAXClient::getBaseUrl() const {
     std::ostringstream url;
     url << connection_props_.getProtocol() << "://" << connection_props_.getHost();
@@ -68,7 +76,16 @@ std::string SMAXClient::getBaseUrl() const {
         url << ":" << port;
     }
 
-    url << "/rest/" << connection_props_.getTenant() << "/ems";
+    url << "/rest/" << connection_props_.getTenant();
+
+    return url.str();
+}
+
+std::string SMAXClient::getBaseRestUrl() const {
+    std::ostringstream url;
+    url << getBaseUrl();
+
+    url << "/ems";
     return url.str();
 }
 
@@ -92,14 +109,14 @@ std::string SMAXClient::getEmsUrl(std::string layout) const {
 
 std::string SMAXClient::getEmsBaseUrl() const {
     std::ostringstream url;
-    url << getBaseUrl() << "/" << connection_props_.getEntity();
+    url << getBaseRestUrl() << "/" << connection_props_.getEntity();
 
     return url.str();
 }
 
 std::string SMAXClient::getBulkPostUrl() const {
     std::ostringstream url;
-    url << getBaseUrl() << "/bulk";
+    url << getBaseRestUrl() << "/bulk";
     return url.str();
 }
 
@@ -121,7 +138,7 @@ std::string SMAXClient::doAction() {
 
     case Action::GETATTACHMENTS:
         return "GETATTACHMENTS";
-        
+
     default:
         break;
     }
@@ -172,6 +189,35 @@ std::string SMAXClient::getRequestInfo() const {
     case smax_ns::Action::JSON:
         oss << "2) URL: " << getEmsUrl(connection_props_.getJsonActionField()) << "\n";
         http_action = "GET";
+
+        break;
+
+    case smax_ns::Action::GETATTACHMENTS:
+        oss << "2) \n\tURL 1: " << getEmsUrl(connection_props_.getAttActionField()) << "\n"
+            << "\tURL 2: " << getFrsUrl("<File ID fromprevious request>") << "\n";
+        http_action = "GET";
+
+
+// {
+//     "entities": [
+//         {
+//             "entity_type": "Request",
+//             "properties": {
+//                 "RequestAttachments":"{\"complexTypeProperties\":[{\"properties\":{\"IsHidden\":true,\"size\":124944,\"mime_type\":\"image\",\"LastUpdateTime\":1741155781839,\"name\":\"text-editor-img-Description-915becab-b54d-4426-951d-8b9b2aee7a6d\",\"id\":\"915becab-b54d-4426-951d-8b9b2aee7a6d\"}},{\"properties\":{\"IsHidden\":false,\"size\":519635,\"mime_type\":\"application/pdf\",\"LastUpdateTime\":1741194306907,\"file_name\":\"AI \& Loneliness - C1_C2 News Lesson.pdf\",\"file_extension\":\"pdf\",\"id\":\"7a868354-e241-4f74-920f-706872e22d16\",\"Creator\":\"1031856\"}},{\"properties\":{\"IsHidden\":false,\"size\":166732,\"mime_type\":\"image/png\",\"LastUpdateTime\":1741194430996,\"file_name\":\"Page1-1.png\",\"file_extension\":\"png\",\"id\":\"a2c23c1e-e8a6-4301-b4f5-e6ae85b5fcff\",\"Creator\":\"1031856\"}}]}",
+//                 "LastUpdateTime": 1741194433900,
+//                 "Id": "189421"
+//             },
+//             "related_properties": {}
+//         }
+//     ],
+//     "meta": {
+//         "completion_status": "OK",
+//         "total_count": 0,
+//         "errorDetailsList": [],
+//         "errorDetailsMetaList": [],
+//         "query_time": 1741194587968367
+//     }
+// }
 
         break;
 

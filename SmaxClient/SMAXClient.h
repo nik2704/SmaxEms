@@ -25,6 +25,7 @@ public:
     SMAXClient& operator=(SMAXClient&&) = delete;
 
     std::string getAuthorizationUrl() const;
+    std::string getFrsUrl(std::string file_id) const;
     std::string getEmsUrl(std::string layout) const;
     std::string getEmsJsonUrl() const;
     std::string getEmsBaseUrl() const;
@@ -56,6 +57,7 @@ private:
     bool request_post(const std::string& endpoint, uint16_t port, const std::string& json_body, std::string& result, int& status_code) const;
     bool request_get(const std::string& endpoint, uint16_t port, std::string& result, int& status_code) const;
     std::string getRequestInfo() const;
+    std::string getBaseRestUrl() const;
     std::string getBaseUrl() const;
     std::string parseJson(const std::string& data);
     std::string sendRequest(const std::string& endpoint, const std::string& body, bool isPost, int & result_status_code);
