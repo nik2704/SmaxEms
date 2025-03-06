@@ -156,15 +156,18 @@ std::string SMAXClient::processGetAttachments() {
 
     isSuccess = saveAttachmentsToDirectory(data);
 
-    if (isSuccess) result = "JSON field is printed";
+    if (isSuccess) result = "Attachments are analyzed";
 
     return result;
 }
 
 bool SMAXClient::saveAttachmentsToDirectory(const std::string& data) const {
     if (directory_handler_) {
-        return directory_handler_->dumpAttachments(data, "attachments", connection_props_.getJsonActionOutput());
+        directory_handler_->printAttachmentsConsole(data);
+
+        return true;
     }
+
     return false;
 }
 
