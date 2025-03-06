@@ -30,7 +30,8 @@ SMAXClient::SMAXClient(const ConnectionParameters& connection_props)
     if (connection_props_.getAction() == Action::JSON) {
         directory_handler_ = &DirectoryHandler::getInstance(
             connection_props_.getJsonActionOutputFolder(),
-            connection_props_.getJsonActionFieldsList()
+            connection_props_.getJsonActionFieldsList(),
+            connection_props_.getAttActionField()
         );
     }
 }

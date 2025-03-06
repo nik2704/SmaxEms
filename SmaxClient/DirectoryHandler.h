@@ -12,8 +12,12 @@ namespace smax_ns {
 
 class DirectoryHandler {
 public:
-    static DirectoryHandler& getInstance(const std::string& full_path, std::shared_ptr<std::vector<std::string>> json_action_fields_list) {
-        static DirectoryHandler instance(full_path, json_action_fields_list);
+    static DirectoryHandler& getInstance(
+        const std::string& full_path,
+        std::shared_ptr<std::vector<std::string>> json_action_fields_list,
+        std::string attachment_field
+    ) {
+        static DirectoryHandler instance(full_path, json_action_fields_list, attachment_field);
         return instance;
     }
 
@@ -47,9 +51,10 @@ private:
     fs::path base_path;
     std::mutex mutex_;
     std::shared_ptr<std::vector<std::string>> json_action_fields_list_;
+    std::string attachment_field_;
 
-    explicit DirectoryHandler(const std::string& full_path, std::shared_ptr<std::vector<std::string>> json_action_fields_list)
-        : json_action_fields_list_(json_action_fields_list) {
+    explicit DirectoryHandler(const std::string& full_path, std::shared_ptr<std::vector<std::string>> json_action_fields_list, std::string attachment_field)
+        : json_action_fields_list_(json_action_fields_list), attachment_field_(attachment_field) {
         base_path = fs::absolute(full_path);
         if (!fs::exists(base_path)) {
             fs::create_directories(base_path);
