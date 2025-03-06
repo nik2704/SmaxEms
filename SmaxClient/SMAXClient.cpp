@@ -27,7 +27,7 @@ SMAXClient& SMAXClient::getInstance(const ConnectionParameters& connection_props
 SMAXClient::SMAXClient(const ConnectionParameters& connection_props)
     : connection_props_(connection_props),
       directory_handler_(nullptr) {
-    if (connection_props_.getAction() == Action::JSON) {
+    if (connection_props_.getAction() == Action::JSON || connection_props_.getAction() == Action::GETATTACHMENTS ) {
         directory_handler_ = &DirectoryHandler::getInstance(
             connection_props_.getJsonActionOutputFolder(),
             connection_props_.getJsonActionFieldsList(),
@@ -138,13 +138,34 @@ std::string SMAXClient::doAction() {
         return processJsonAction();
 
     case Action::GETATTACHMENTS:
-        return "GETATTACHMENTS";
+        return processGetAttachments();
 
     default:
         break;
     }
     
     return "Unsupported action";
+}
+
+std::string SMAXClient::processGetAttachments() {
+    bool isSuccess;
+    int status_code;
+    std::string result = "ATTACHMENTS";
+
+    auto data = sendRequest(getEmsUrl(connection_props_.getAttActionField()), "", false, status_code);
+
+    isSuccess = saveAttachmentsToDirectory(data);
+
+    if (isSuccess) result = "JSON field is printed";
+
+    return result;
+}
+
+bool SMAXClient::saveAttachmentsToDirectory(const std::string& data) const {
+    if (directory_handler_) {
+        return directory_handler_->dumpAttachments(data, "attachments", connection_props_.getJsonActionOutput());
+    }
+    return false;
 }
 
 bool SMAXClient::saveJsonToDirectory(const std::string& data) const {

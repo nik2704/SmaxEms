@@ -56,19 +56,18 @@ public:
         return true;
     }
 
-    bool dumpAttachments(json dblf, const std::string& subfolder_name, const std::string& output_method) {
+    bool dumpAttachments(const std::string& json_str, const std::string&, const std::string& output_method) { //subfolder_name
         std::lock_guard<std::mutex> lock(mutex_);
 
-        if (!validateJson(dblf)) return false;
-
         if (output_method == "console") {
-            printToConsole(dblf);
-        } else if (output_method == "file") {
-            return saveToFile(dblf, subfolder_name);
-        } else {
-            std::cerr << "Error: Invalid output method." << std::endl;
-            return false;
-        }
+            printAttachmentsConsole(json_str);
+        } 
+        // else if (output_method == "file") {
+        //     return saveToFile(dblf, subfolder_name);
+        // } else {
+        //     std::cerr << "Error: Invalid output method." << std::endl;
+        //     return false;
+        // }
 
         return true;
     }
@@ -126,6 +125,16 @@ private:
         std::cout << dblf.dump(4) << std::endl;
     }
 
+    void printAttachmentsConsole(const std::string& json_str) {
+        auto attachmentInfo = getAttachmentInfo(json_str);
+
+        for (const auto& att : *attachmentInfo) {
+            std::cout << "Record ID: " << att.record_id << ", ID: " << att.id
+                    << ", File Name: " << att.file_name << ", Extension: " << att.file_extension
+                    << ", Is Hidden: " << (att.is_hidden ? "true" : "false") << std::endl;
+        }
+    }
+
     bool saveToFile(const json& dblf, const std::string& subfolder_name) {
         fs::path subfolder_path = base_path / subfolder_name;
         if (!fs::exists(subfolder_path)) {
@@ -155,16 +164,16 @@ private:
         return true;
     }
 
-    std::shared_ptr<std::vector<Attachment>> parseJson(const std::string& jsonString) {
-        auto attachments = std::make_shared<std::vector<Attachment>>();  // Using shared_ptr to manage the vector
+    std::shared_ptr<std::vector<Attachment>> getAttachmentInfo(const std::string& jsonString) {
+        auto attachments = std::make_shared<std::vector<Attachment>>();
         try {
             nlohmann::json jsonData = nlohmann::json::parse(jsonString);
             
             for (const auto& entity : jsonData["entities"]) {
                 std::string record_id = entity["properties"]["Id"].get<std::string>();
                 
-                if (entity["properties"].contains("RequestAttachments")) {
-                    auto attachmentsJson = nlohmann::json::parse(entity["properties"]["RequestAttachments"].get<std::string>());
+                if (entity["properties"].contains(attachment_field_)) {
+                    auto attachmentsJson = nlohmann::json::parse(entity["properties"][attachment_field_].get<std::string>());
                     
                     for (const auto& item : attachmentsJson["complexTypeProperties"]) {
                         Attachment att;
@@ -174,7 +183,7 @@ private:
                         att.file_extension = item["properties"].value("file_extension", "");
                         att.is_hidden = item["properties"]["IsHidden"].get<bool>();
                         
-                        attachments->push_back(att);  // Add to the vector managed by shared_ptr
+                        attachments->push_back(att);
                     }
                 }
             }
@@ -182,7 +191,7 @@ private:
             std::cerr << "Error parsing JSON: " << e.what() << std::endl;
         }
         
-        return attachments;  // Return the shared_ptr to the vector
+        return attachments;
     }
 
 };

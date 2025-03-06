@@ -43,6 +43,8 @@ private:
     std::string url_encode(const std::string& value) const;
     std::string getData();
     std::string postData();
+    std::string processGetAttachments();
+    bool saveAttachmentsToDirectory(const std::string& data) const;
     bool saveJsonToDirectory(const std::string& data) const;
     std::string processJsonAction();
     void updateToken();
