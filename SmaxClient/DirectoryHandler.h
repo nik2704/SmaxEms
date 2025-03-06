@@ -129,9 +129,9 @@ private:
         auto attachmentInfo = getAttachmentInfo(json_str);
 
         for (const auto& att : *attachmentInfo) {
-            std::cout << "Record ID: " << att.record_id << ", ID: " << att.id
-                    << ", File Name: " << att.file_name << ", Extension: " << att.file_extension
-                    << ", Is Hidden: " << (att.is_hidden ? "true" : "false") << std::endl;
+            std::cout << "Record ID:" << att.record_id << ", File ID:" << att.id
+                    << ", File Name:" << att.file_name << ", Extension:" << att.file_extension
+                    << ", Is Hidden:" << (att.is_hidden ? "true" : "false") << std::endl;
         }
     }
 
