@@ -10,6 +10,14 @@ using json = nlohmann::json;
 
 namespace smax_ns {
 
+struct Attachment {
+    std::string record_id;
+    std::string id;
+    std::string file_name;
+    std::string file_extension;
+    bool is_hidden;
+};
+
 class DirectoryHandler {
 public:
     static DirectoryHandler& getInstance(
@@ -44,6 +52,24 @@ public:
             std::cerr << "Error: Invalid output method." << std::endl;
             return false;
         }
+
+        return true;
+    }
+
+    bool dumpAttachments(json dblf, const std::string& subfolder_name, const std::string& output_method) {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        if (!validateJson(dblf)) return false;
+
+        if (output_method == "console") {
+            printToConsole(dblf);
+        } else if (output_method == "file") {
+            return saveToFile(dblf, subfolder_name);
+        } else {
+            std::cerr << "Error: Invalid output method." << std::endl;
+            return false;
+        }
+
         return true;
     }
 
@@ -128,6 +154,37 @@ private:
         out_file << entity.dump(4);
         return true;
     }
+
+    std::shared_ptr<std::vector<Attachment>> parseJson(const std::string& jsonString) {
+        auto attachments = std::make_shared<std::vector<Attachment>>();  // Using shared_ptr to manage the vector
+        try {
+            nlohmann::json jsonData = nlohmann::json::parse(jsonString);
+            
+            for (const auto& entity : jsonData["entities"]) {
+                std::string record_id = entity["properties"]["Id"].get<std::string>();
+                
+                if (entity["properties"].contains("RequestAttachments")) {
+                    auto attachmentsJson = nlohmann::json::parse(entity["properties"]["RequestAttachments"].get<std::string>());
+                    
+                    for (const auto& item : attachmentsJson["complexTypeProperties"]) {
+                        Attachment att;
+                        att.record_id = record_id;
+                        att.id = item["properties"]["id"].get<std::string>();
+                        att.file_name = item["properties"].value("file_name", "");
+                        att.file_extension = item["properties"].value("file_extension", "");
+                        att.is_hidden = item["properties"]["IsHidden"].get<bool>();
+                        
+                        attachments->push_back(att);  // Add to the vector managed by shared_ptr
+                    }
+                }
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+        }
+        
+        return attachments;  // Return the shared_ptr to the vector
+    }
+
 };
 
 } // namespace smax_ns

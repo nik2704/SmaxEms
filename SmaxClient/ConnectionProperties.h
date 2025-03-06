@@ -31,7 +31,6 @@ struct InputValues {
     std::string json_action_output;         ///< console or file
     std::string json_action_output_folder;  ///< output folder
     std::string att_action_output;          ///< file or console
-    std::string att_action_output_mode;     ///< list or content
     std::string att_action_field;           ///< like RequestAttachments
     std::string att_action_output_folder;   ///< output folder
 };
@@ -60,7 +59,6 @@ public:
     const std::string& getJsonActionOutputFolder() const;
     const std::shared_ptr<std::vector<std::string>>& getJsonActionFieldsList() const;
     const std::string& getAttActionOutput() const;
-    const std::string& getAttActionOutputMode() const;
     const std::string& getAttActionField() const;
     const std::string& getAttActionOutputFolder() const;
 
@@ -101,7 +99,6 @@ private:
     std::string json_action_output_;
     std::string json_action_output_folder_;
     std::string att_action_output_;
-    std::string att_action_output_mode_;
     std::string att_action_field_;
     std::string att_action_output_folder_;
 

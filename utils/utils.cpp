@@ -75,10 +75,6 @@ std::unique_ptr<ValidationResult> validate_attachments_actions(const InputValues
         return std::make_unique<ValidationResult>(ValidationResult{ "Acceptable action's output values are: file, console.", 1 });
     }
 
-    if (!is_string_equals(input.att_action_output_mode, "list") && !is_string_equals(input.att_action_output, "content")) {
-        return std::make_unique<ValidationResult>(ValidationResult{ "Acceptable mode's output values are: list, content.", 1 });
-    }
-
     return std::make_unique<ValidationResult>(ValidationResult{"", 0});
 }
 
@@ -157,7 +153,6 @@ bool parse_options(int argc, char* argv[], smax_ns::InputValues& input_values, p
         ("json-action-output", po::value<std::string>(&input_values.json_action_output)->default_value("console"), "Json action output")
         ("json-action-output-folder", po::value<std::string>(&input_values.json_action_output_folder), "Json action output folder")
         ("att-action-output", po::value<std::string>(&input_values.att_action_output)->default_value("console"), "Json action output")
-        ("att-action-output-mode", po::value<std::string>(&input_values.att_action_output_mode)->default_value("list"), "list or content")
         ("att_action_field", po::value<std::string>(&input_values.att_action_field), "Field with attachments")
         ("att-action-output-folder", po::value<std::string>(&input_values.att_action_output_folder), "Attachments action output folder")
         ("help,h", "Help");

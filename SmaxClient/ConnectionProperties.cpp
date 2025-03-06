@@ -77,7 +77,6 @@ ConnectionParameters::ConnectionParameters(const InputValues& input_values)
       json_action_output_(input_values.json_action_output),
       json_action_output_folder_(input_values.json_action_output_folder),
       att_action_output_(input_values.att_action_output),
-      att_action_output_mode_(input_values.att_action_output_mode),
       att_action_field_(input_values.att_action_field),
       att_action_output_folder_(input_values.att_action_output_folder) {}
 
@@ -100,7 +99,6 @@ const std::string& ConnectionParameters::getJsonActionOutput() const { return js
 const std::string& ConnectionParameters::getJsonActionOutputFolder() const { return json_action_output_folder_; }
 const std::shared_ptr<std::vector<std::string>>& ConnectionParameters::getJsonActionFieldsList() const { return json_action_fields_list_; }
 const std::string& ConnectionParameters::getAttActionOutput() const { return att_action_output_; }
-const std::string& ConnectionParameters::getAttActionOutputMode() const { return att_action_output_mode_; }
 const std::string& ConnectionParameters::getAttActionField() const { return att_action_field_; }
 const std::string& ConnectionParameters::getAttActionOutputFolder() const { return att_action_output_folder_; }    
 
