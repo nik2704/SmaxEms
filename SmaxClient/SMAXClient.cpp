@@ -429,18 +429,24 @@ bool SMAXClient::doSaveAttachments(const std::string& data) const {
     auto attachments = directory_handler_->getAttachmentInfo(data);
 
     size_t counter = 1;
+    
     for (const auto& attachment : *attachments) {
+        std::string file_name = !attachment.file_name.empty() ? attachment.file_name : "file_" + std::to_string(counter++);
+
+        std::ostringstream oss;
+        oss << "Saving file " << file_name;
+        ConsoleSpinner spinner(oss.str());
+        
         std::string result;
         std::string url= getFrsUrl(attachment.id);
         int status_code = 0;
 
         bool success = perform_request(http::verb::get, url, getPort(), "", result, {{"Cookie", "SMAX_AUTH_TOKEN=" + token_info_->token}}, status_code);
         if (!success || status_code != 200) {
-            std::cerr << "Ошибка загрузки: " << url << " (HTTP " << status_code << ")\n";
+            std::cerr << "File load error: " << url << " (HTTP " << status_code << ")\n";
             continue;
         }
 
-        std::string file_name = !attachment.file_name.empty() ? attachment.file_name : "file_" + std::to_string(counter++);
         std::string subfolder = attachment.record_id;
 
         fs::path file_path = fs::path(attachment_folder) / subfolder / file_name;
@@ -448,14 +454,14 @@ bool SMAXClient::doSaveAttachments(const std::string& data) const {
 
         std::ofstream file(file_path, std::ios::binary);
         if (!file) {
-            std::cerr << "Ошибка создания файла: " << file_path << "\n";
+            std::cerr << "File creation error: " << file_path << "\n";
             continue;
         }
 
         file.write(result.data(), result.size());
         file.close();
 
-        std::cout << "Файл сохранен: " << file_path << "\n";
+        std::cout << "File is saved: " << file_path;
     }
 
     return true;
