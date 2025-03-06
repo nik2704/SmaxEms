@@ -64,6 +64,7 @@ private:
     std::string parseJson(const std::string& data);
     std::string sendRequest(const std::string& endpoint, const std::string& body, bool isPost, int & result_status_code);
     int getPort() const;
+    bool doSaveAttachments(const std::string& data) const;
 };
 
 }

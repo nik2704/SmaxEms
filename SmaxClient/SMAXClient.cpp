@@ -172,8 +172,7 @@ bool SMAXClient::saveAttachmentsToDirectory(const std::string& data) const {
     if (connection_props_.getAttActionOutput() == "console") {
         directory_handler_->printAttachmentsConsole(data);
     } if (connection_props_.getAttActionOutput() == "file") {
-        auto attachment_folder = directory_handler_->prepareDirectory(connection_props_.getAttActionOutputFolder());
-        auto attachments = directory_handler_->getAttachmentInfo(data);
+        doSaveAttachments(data);
     }
 
     return true;
@@ -423,6 +422,43 @@ bool SMAXClient::auth_post(const std::string& endpoint, uint16_t port, const std
 
 bool SMAXClient::request_post(const std::string& endpoint, uint16_t port, const std::string& json_body, std::string& result, int& status_code) const {
     return perform_request(http::verb::post, endpoint, port, json_body, result, {{"Cookie", "SMAX_AUTH_TOKEN=" + token_info_->token}}, status_code);
+}
+
+bool SMAXClient::doSaveAttachments(const std::string& data) const {
+    auto attachment_folder = directory_handler_->prepareDirectory(connection_props_.getAttActionOutputFolder());
+    auto attachments = directory_handler_->getAttachmentInfo(data);
+
+    size_t counter = 1;
+    for (const auto& attachment : *attachments) {
+        std::string result;
+        std::string url= getFrsUrl(attachment.id);
+        int status_code = 0;
+
+        bool success = perform_request(http::verb::get, url, getPort(), "", result, {{"Cookie", "SMAX_AUTH_TOKEN=" + token_info_->token}}, status_code);
+        if (!success || status_code != 200) {
+            std::cerr << "Ошибка загрузки: " << url << " (HTTP " << status_code << ")\n";
+            continue;
+        }
+
+        std::string file_name = !attachment.file_name.empty() ? attachment.file_name : "file_" + std::to_string(counter++);
+        std::string subfolder = attachment.record_id;
+
+        fs::path file_path = fs::path(attachment_folder) / subfolder / file_name;
+        fs::create_directories(file_path.parent_path());
+
+        std::ofstream file(file_path, std::ios::binary);
+        if (!file) {
+            std::cerr << "Ошибка создания файла: " << file_path << "\n";
+            continue;
+        }
+
+        file.write(result.data(), result.size());
+        file.close();
+
+        std::cout << "Файл сохранен: " << file_path << "\n";
+    }
+
+    return true;
 }
 
 
