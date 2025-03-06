@@ -71,6 +71,7 @@ ConnectionParameters::ConnectionParameters(const InputValues& input_values)
       filter_(input_values.filter),
       action_(parseAction(input_values.action)),
       csv_(input_values.csv),
+      output_folder_(input_values.output_folder),
       verbose_(input_values.verbose),
       json_action_field_(input_values.json_action_field),
       json_action_fields_list_(splitString(input_values.json_action_field)),
@@ -93,6 +94,7 @@ const std::string& ConnectionParameters::getPassword() const { return password_;
 const Action& ConnectionParameters::getAction() const { return action_; }
 std::string ConnectionParameters::getActionAsString() const { return actionToString(action_); }
 const std::string& ConnectionParameters::getCSVfilename() const { return csv_; }
+const std::string& ConnectionParameters::getOutputFolder() const { return output_folder_; }
 bool ConnectionParameters::isVerbose() const { return verbose_; }
 const std::string& ConnectionParameters::getJsonActionField() const { return json_action_field_; }
 const std::string& ConnectionParameters::getJsonActionOutput() const { return json_action_output_; }

@@ -1,5 +1,6 @@
 #include <boost/asio.hpp>
 #include <chrono>
+#include <fstream>
 #include <future>
 #include <nlohmann/json.hpp>
 #include <sstream>
@@ -10,6 +11,7 @@
 #include "ConsoleSpinner.h"
 #include "SMAXClient.h"
 
+namespace fs = std::filesystem;
 using json = nlohmann::json;
 
 namespace smax_ns {
@@ -29,6 +31,7 @@ SMAXClient::SMAXClient(const ConnectionParameters& connection_props)
       directory_handler_(nullptr) {
     if (connection_props_.getAction() == Action::JSON || connection_props_.getAction() == Action::GETATTACHMENTS ) {
         directory_handler_ = &DirectoryHandler::getInstance(
+            connection_props_.getOutputFolder(),
             connection_props_.getJsonActionOutputFolder(),
             connection_props_.getJsonActionFieldsList(),
             connection_props_.getAttActionField()
@@ -162,18 +165,23 @@ std::string SMAXClient::processGetAttachments() {
 }
 
 bool SMAXClient::saveAttachmentsToDirectory(const std::string& data) const {
-    if (directory_handler_) {
-        directory_handler_->printAttachmentsConsole(data);
-
-        return true;
+    if (!directory_handler_) {
+        return false;
     }
 
-    return false;
+    if (connection_props_.getAttActionOutput() == "console") {
+        directory_handler_->printAttachmentsConsole(data);
+    } if (connection_props_.getAttActionOutput() == "file") {
+        auto attachment_folder = directory_handler_->prepareDirectory(connection_props_.getAttActionOutputFolder());
+        auto attachments = directory_handler_->getAttachmentInfo(data);
+    }
+
+    return true;
 }
 
 bool SMAXClient::saveJsonToDirectory(const std::string& data) const {
     if (directory_handler_) {
-        return directory_handler_->dumpJson(data, "json_field", connection_props_.getJsonActionOutput());
+        return directory_handler_->dumpJson(data, connection_props_.getJsonActionOutput());
     }
     return false;
 }
@@ -186,6 +194,7 @@ std::string SMAXClient::processJsonAction() {
     auto data = sendRequest(getEmsUrl(connection_props_.getJsonActionField()), "", false, status_code);
 
     isSuccess = saveJsonToDirectory(data);
+
     if (isSuccess) result = "JSON field is printed";
 
     return result;

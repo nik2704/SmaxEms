@@ -26,9 +26,10 @@ struct InputValues {
     std::string filter;             ///< Filter
     std::string action;             ///< Action (GET | CREATE | UPDATE | JSON | GETATTACHMENTS)
     std::string csv;                ///< CSV for update or create records
+    std::string output_folder;      
     bool verbose;                   ///< Just information
     std::string json_action_field;          ///< RequestAttachments, TaskPlanForApprove,TaskPlanForClassify,TaskPlanForEscalate,TaskPlanForFirstLineSupport,TaskPlanForFulfill,TaskPlanForReview
-    std::string json_action_output;         ///< console or file
+    std::string json_action_output;
     std::string json_action_output_folder;  ///< output folder
     std::string att_action_output;          ///< file or console
     std::string att_action_field;           ///< like RequestAttachments
@@ -53,6 +54,7 @@ public:
     const Action& getAction() const;
     std::string getActionAsString() const;
     const std::string& getCSVfilename() const;
+    const std::string& getOutputFolder() const;
     bool isVerbose() const;
     const std::string& getJsonActionField() const;
     const std::string& getJsonActionOutput() const;
@@ -93,6 +95,7 @@ private:
     std::string filter_;
     Action action_;
     std::string csv_;
+    std::string output_folder_;
     bool verbose_;
     std::string json_action_field_;
     std::shared_ptr<std::vector<std::string>> json_action_fields_list_;

@@ -22,32 +22,36 @@ class DirectoryHandler {
 public:
     static DirectoryHandler& getInstance(
         const std::string& full_path,
+        const std::string& json_subfolder,
         std::shared_ptr<std::vector<std::string>> json_action_fields_list,
         std::string attachment_field
     ) {
-        static DirectoryHandler instance(full_path, json_action_fields_list, attachment_field);
+        static DirectoryHandler instance(full_path, json_subfolder, json_action_fields_list, attachment_field);
         return instance;
     }
 
-    bool dumpJson(const std::string& json_str, const std::string& subfolder_name, const std::string& output_method) {
+    bool dumpJson(const std::string& json_str, const std::string& output_method) {
         try {
             json parsed_json = json::parse(json_str);
-            return dumpJson(parsed_json, subfolder_name, output_method);
+
+            return dumpJson(parsed_json, output_method);
         } catch (const json::exception& e) {
             std::cerr << "JSON parsing error: " << e.what() << std::endl;
             return false;
         }
     }
 
-    bool dumpJson(json dblf, const std::string& subfolder_name, const std::string& output_method) {
+    bool dumpJson(json dblf, const std::string& output_method) {
         std::lock_guard<std::mutex> lock(mutex_);
+
         convertFieldsToJson(dblf);
+
         if (!validateJson(dblf)) return false;
-        
+
         if (output_method == "console") {
             printToConsole(dblf);
         } else if (output_method == "file") {
-            return saveToFile(dblf, subfolder_name);
+            return saveToFile(dblf);
         } else {
             std::cerr << "Error: Invalid output method." << std::endl;
             return false;
@@ -113,12 +117,18 @@ public:
 
 private:
     fs::path base_path_;
+    std::string json_subfolder_;
     std::mutex mutex_;
     std::shared_ptr<std::vector<std::string>> json_action_fields_list_;
     std::string attachment_field_;
 
-    explicit DirectoryHandler(const std::string& base_path, std::shared_ptr<std::vector<std::string>> json_action_fields_list, std::string attachment_field)
-        : base_path_(fs::absolute(base_path)), json_action_fields_list_(json_action_fields_list), attachment_field_(attachment_field) { }
+    explicit DirectoryHandler(
+        const std::string& base_path,
+        const std::string& json_subfolder,
+        std::shared_ptr<std::vector<std::string>> json_action_fields_list,
+        std::string attachment_field
+    )
+        : base_path_(fs::absolute(base_path)), json_subfolder_(json_subfolder), json_action_fields_list_(json_action_fields_list), attachment_field_(attachment_field) { }
 
     DirectoryHandler(const DirectoryHandler&) = delete;
     DirectoryHandler& operator=(const DirectoryHandler&) = delete;
@@ -158,8 +168,10 @@ private:
         std::cout << dblf.dump(4) << std::endl;
     }
 
-    bool saveToFile(const json& dblf, const std::string& subfolder_name) {
-        auto subfolder_path = prepareDirectory(subfolder_name);
+    bool saveToFile(const json& dblf) {
+        auto subfolder_path = prepareDirectory(json_subfolder_);
+        // std::cout << "1" << std::endl;
+        // std::cout << dblf.dump(4) << std::endl;
 
         for (const auto& entity : dblf["entities"]) {
             if (!entity["properties"].contains("Id")) {

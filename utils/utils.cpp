@@ -138,6 +138,7 @@ bool parse_options(int argc, char* argv[], smax_ns::InputValues& input_values, p
          "Action (GET is default, CREATE, UPDATE, JSON)")
         ("config-file", po::value<std::string>(), "Full name of a config file")
         ("csv", po::value<std::string>(&input_values.csv), "CSV file name (required if action is not GET)")
+        ("output-folder", po::value<std::string>(&input_values.output_folder)->default_value("output"), "Root output folder")
         ("entity,e", po::value<std::string>(&input_values.entity)->default_value("Request"), "Entity name")
         ("filter", po::value<std::string>(&input_values.filter), "Filter (like \"Id='52641'\")")
         ("layout,l", po::value<std::string>(&input_values.layout)->default_value("Id,DisplayLabel"), "Layout (fields)")
