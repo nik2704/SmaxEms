@@ -1,7 +1,7 @@
 
 # SMAX Client CLI
 
-This is a command-line interface (CLI) for interacting with the **SMAX** system's REST API. The project allows performing various operations such as retrieving records, uploading attachments, and handling JSON actions. It supports a flexible configuration system and customizable output formats.
+This is a Linux command-line interface (CLI) for interacting with the **SMAX** system's REST API. The project allows performing various operations such as retrieving records, uploading attachments, and handling JSON actions. It supports a flexible configuration system and customizable output formats.
 
 ## Table of Contents
 - [Features](#features)
