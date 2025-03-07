@@ -33,6 +33,7 @@ add_executable(smax_ems
     SmaxClient/ConnectionProperties.cpp
     SmaxClient/SMAXClient.cpp
     SmaxClient/ConsoleSpinner.cpp
+    SmaxClient/ResponseHelper.cpp
     utils/utils.cpp
 )
 
