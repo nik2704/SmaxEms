@@ -1,27 +1,18 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: MSBuild
+name: Build and Compile C++ Project with Dependencies
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 env:
-  # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: .
-
-  # Configuration type to build.
-  # You can convert this to a build matrix if you need coverage of multiple configuration types.
-  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
   BUILD_CONFIGURATION: Release
-
-permissions:
-  contents: read
+  CMAKE_GENERATOR: "Visual Studio 16 2019"  # Or change this based on the MSVC version installed
+  BOOST_VERSION: "1.58"  # The Boost version you're using
+  NLOHMANN_JSON_VERSION: "3.10.5"  # The nlohmann_json version you're using
 
 jobs:
   build:
@@ -30,15 +21,40 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Set up CMake
+      uses: actions/setup-cmake@v3
+      with:
+        cmake-version: '3.21.1'
 
-    - name: Restore NuGet packages
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+    - name: Cache Boost and nlohmann_json dependencies
+      uses: actions/cache@v2
+      with:
+        path: |
+          CMakeCache.txt
+          CMakeFiles/
+          build/
+        key: ${{ runner.os }}-boost-${{ env.BOOST_VERSION }}-nlohmann_json-${{ env.NLOHMANN_JSON_VERSION }}
+        restore-keys: |
+          ${{ runner.os }}-boost-${{ env.BOOST_VERSION }}-nlohmann_json-${{ env.NLOHMANN_JSON_VERSION }}
 
-    - name: Build
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      # Add additional options to the MSBuild command line here (like platform or verbosity level).
-      # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
-      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+    - name: Install Boost
+      run: |
+        choco install boost-msvc-${{ env.BOOST_VERSION }} --version=${{ env.BOOST_VERSION }}
+
+    - name: Install nlohmann_json via vcpkg
+      run: |
+        curl -LO https://github.com/microsoft/vcpkg/releases/download/2022.05.15/vcpkg-x64-windows.zip
+        unzip vcpkg-x64-windows.zip
+        .\vcpkg\bootstrap-vcpkg.bat
+        .\vcpkg\vcpkg install nlohmann-json:${{ env.NLOHMANN_JSON_VERSION }}
+
+    - name: Configure and Build CMake project
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=${{ env.BUILD_CONFIGURATION }} -DCMAKE_TOOLCHAIN_FILE=path_to_vcpkg_toolchain_file
+        cmake --build . --config ${BUILD_CONFIGURATION}
+
+    - name: Run Tests (optional)
+      run: |
+        ctest --output-on-failure
