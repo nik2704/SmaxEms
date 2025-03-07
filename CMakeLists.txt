@@ -13,16 +13,17 @@ enable_language(C)
 enable_language(CXX)
 
 # Настройки Boost
-set(Boost_USE_RELEASE_LIBS ON)
-set(Boost_USE_MULTITHREAD ON)
+set(Boost_USE_STATIC_LIBS ON)  # Статическая линковка Boost
+set(Boost_USE_MULTITHREAD ON)  # Многопоточность
 set(BOOST_ROOT "/usr")
-set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
-set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
-
-# Поиск и подключение зависимостей
-# find_package(nlohmann_json CONFIG REQUIRED)
+# Find Boost with the required components
 find_package(Boost 1.58 REQUIRED COMPONENTS program_options system filesystem)
+
+# Find OpenSSL
+set(OPENSSL_USE_STATIC_LIBS TRUE)  # Ensure static linking for OpenSSL
 find_package(OpenSSL REQUIRED)
+
+# Find nlohmann_json (header-only, no need for linking)
 find_package(nlohmann_json REQUIRED)
 
 # Добавление исполняемого файла
@@ -39,10 +40,9 @@ add_executable(smax_ems
 
 # Подключение библиотек
 target_link_libraries(smax_ems
-    # nlohmann_json::nlohmann_json
-    ${Boost_LIBRARIES}
-    OpenSSL::SSL OpenSSL::Crypto
-    nlohmann_json::nlohmann_json
+    ${Boost_LIBRARIES}  # Automatically includes necessary Boost libraries
+    OpenSSL::SSL OpenSSL::Crypto  # Statically linked OpenSSL libraries
+    nlohmann_json::nlohmann_json  # Header-only, no linking necessary
 )
 
 # Настройки стандарта C++
@@ -53,8 +53,6 @@ set_target_properties(smax_ems PROPERTIES
 
 # Включаем директории заголовков
 target_include_directories(smax_ems
-    PRIVATE ${CMAKE_BINARY_DIR}
-    # PRIVATE ${nlohmann_json_INCLUDE_DIRS}
     PRIVATE ${Boost_INCLUDE_DIRS}
 )
 

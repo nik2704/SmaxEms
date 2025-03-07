@@ -11,13 +11,29 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      # Install dependencies (static libraries)
       - run: sudo apt-get update && sudo apt-get install libboost-program-options-dev libboost-system-dev libboost-filesystem-dev -y
       - run: sudo apt-get install nlohmann-json3-dev -y
+      - run: sudo apt-get install libssl-dev -y  # OpenSSL static libraries
+
+      # Ensure static versions of libraries are used
+      - run: sudo apt-get install libboost-all-dev -y # Ensures Boost libraries are available
+      - run: sudo apt-get install libssl-dev -y  # Ensure OpenSSL is statically linked
+
+      # Build Setup
       - run: mkdir -p build
-      - run: cmake -B build -S . -DPATCH_VERSION=${{ github.run_number }} -DWITH_BOOST_TEST=ON
+      - run: cmake -B build -S . -DPATCH_VERSION=${{ github.run_number }} -DWITH_BOOST_TEST=ON -DBOOST_USE_STATIC_LIBS=ON -DOPENSSL_USE_STATIC_LIBS=TRUE
+
+      # Build the project
       - run: cmake --build build
+
+      # Run tests
       - run: ctest --test-dir build --output-on-failure
+
+      # Package the build
       - run: cmake --build build --target package
+
+      # Create a release on GitHub
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -28,6 +44,8 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
+
+      # Upload the release asset (the .deb package)
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
