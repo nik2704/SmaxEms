@@ -1,9 +1,3 @@
-#include <iostream>
-#include <fstream>
-#include <filesystem>
-#include <string>
-#include <mutex>
-#include <nlohmann/json.hpp>
 #include "ResponseHelper.h"
 
 namespace fs = std::filesystem;
