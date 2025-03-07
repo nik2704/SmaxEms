@@ -70,7 +70,7 @@ void RestClient::on_read(beast::error_code ec, std::size_t bytes_transferred) {
     if (ec) return fail(ec, "read");
     boost::ignore_unused(bytes_transferred);
 
-    int http_status = static_cast<int>(res_.result()); // Extract HTTP status code
+    int http_status = static_cast<int>(res_.result());
 
     if (response_handler_) {
         response_handler_(boost::beast::buffers_to_string(res_.body().data()), ec, http_status);
