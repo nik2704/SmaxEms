@@ -28,9 +28,9 @@ SMAXClient& SMAXClient::getInstance(const ConnectionParameters& connection_props
 
 SMAXClient::SMAXClient(const ConnectionParameters& connection_props)
     : connection_props_(connection_props),
-      directory_handler_(nullptr) {
+      response_helper_(nullptr) {
     if (connection_props_.getAction() == Action::JSON || connection_props_.getAction() == Action::GETATTACHMENTS ) {
-        directory_handler_ = &DirectoryHandler::getInstance(
+        response_helper_ = &ResponseHelper::getInstance(
             connection_props_.getOutputFolder(),
             connection_props_.getJsonActionOutputFolder(),
             connection_props_.getJsonActionFieldsList(),
@@ -165,12 +165,12 @@ std::string SMAXClient::processGetAttachments() {
 }
 
 bool SMAXClient::saveAttachmentsToDirectory(const std::string& data) const {
-    if (!directory_handler_) {
+    if (!response_helper_) {
         return false;
     }
 
     if (connection_props_.getAttActionOutput() == "console") {
-        directory_handler_->printAttachmentsConsole(data);
+        response_helper_->printAttachmentsConsole(data);
     } if (connection_props_.getAttActionOutput() == "file") {
         doSaveAttachments(data);
     }
@@ -179,8 +179,8 @@ bool SMAXClient::saveAttachmentsToDirectory(const std::string& data) const {
 }
 
 bool SMAXClient::saveJsonToDirectory(const std::string& data) const {
-    if (directory_handler_) {
-        return directory_handler_->dumpJson(data, connection_props_.getJsonActionOutput());
+    if (response_helper_) {
+        return response_helper_->dumpJson(data, connection_props_.getJsonActionOutput());
     }
     return false;
 }
@@ -425,8 +425,8 @@ bool SMAXClient::request_post(const std::string& endpoint, uint16_t port, const 
 }
 
 bool SMAXClient::doSaveAttachments(const std::string& data) const {
-    auto attachment_folder = directory_handler_->prepareDirectory(connection_props_.getAttActionOutputFolder());
-    auto attachments = directory_handler_->getAttachmentInfo(data);
+    auto attachment_folder = response_helper_->prepareDirectory(connection_props_.getAttActionOutputFolder());
+    auto attachments = response_helper_->getAttachmentInfo(data);
 
     size_t counter = 1;
     

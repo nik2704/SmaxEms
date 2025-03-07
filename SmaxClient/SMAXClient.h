@@ -4,7 +4,7 @@
 #include <boost/beast/http.hpp>
 #include <memory>
 #include "ConnectionProperties.h"
-#include "DirectoryHandler.h"
+#include "ResponseHelper.h"
 
 namespace smax_ns {
 
@@ -37,7 +37,7 @@ private:
     static std::unique_ptr<SMAXClient> instance_;
     static std::once_flag init_flag_;
     std::optional<TokenInfo> token_info_;
-    DirectoryHandler* directory_handler_;
+    ResponseHelper* response_helper_;
 
     explicit SMAXClient(const ConnectionParameters& connection_props);
     std::string url_encode(const std::string& value) const;

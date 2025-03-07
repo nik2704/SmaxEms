@@ -18,15 +18,15 @@ struct Attachment {
     bool is_hidden;
 };
 
-class DirectoryHandler {
+class ResponseHelper {
 public:
-    static DirectoryHandler& getInstance(
+    static ResponseHelper& getInstance(
         const std::string& full_path,
         const std::string& json_subfolder,
         std::shared_ptr<std::vector<std::string>> json_action_fields_list,
         std::string attachment_field
     ) {
-        static DirectoryHandler instance(full_path, json_subfolder, json_action_fields_list, attachment_field);
+        static ResponseHelper instance(full_path, json_subfolder, json_action_fields_list, attachment_field);
         return instance;
     }
 
@@ -122,7 +122,7 @@ private:
     std::shared_ptr<std::vector<std::string>> json_action_fields_list_;
     std::string attachment_field_;
 
-    explicit DirectoryHandler(
+    explicit ResponseHelper(
         const std::string& base_path,
         const std::string& json_subfolder,
         std::shared_ptr<std::vector<std::string>> json_action_fields_list,
@@ -130,8 +130,8 @@ private:
     )
         : base_path_(fs::absolute(base_path)), json_subfolder_(json_subfolder), json_action_fields_list_(json_action_fields_list), attachment_field_(attachment_field) { }
 
-    DirectoryHandler(const DirectoryHandler&) = delete;
-    DirectoryHandler& operator=(const DirectoryHandler&) = delete;
+    ResponseHelper(const ResponseHelper&) = delete;
+    ResponseHelper& operator=(const ResponseHelper&) = delete;
 
     void convertFieldsToJson(json& dblf) {
         if (!dblf.contains("entities") || !dblf["entities"].is_array()) return;
