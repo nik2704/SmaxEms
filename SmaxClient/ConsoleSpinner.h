@@ -1,52 +1,47 @@
+/**
+ * @file ConsoleSpinner.h
+ * @brief Defines the ConsoleSpinner class for displaying a spinning indicator during long-running operations.
+ */
+
 #include <iostream>
 #include <thread>
 #include <atomic>
 #include <chrono>
 #include <mutex>
 
+/**
+ * @class ConsoleSpinner
+ * @brief A simple console-based spinner to indicate ongoing operations.
+ */
 class ConsoleSpinner {
 public:
-    ConsoleSpinner(const std::string& operation)
-        : stop_flag_(false), operation_(operation) {
-        {
-            std::lock_guard<std::mutex> lock(cout_mutex_);
-            std::cout << operation_ << "..." << std::flush;
-        }
-        spinner_thread_ = std::thread(&ConsoleSpinner::run, this);
-    }
+    /**
+     * @brief Constructs a ConsoleSpinner with a specified operation name.
+     * @param operation The name of the operation being executed.
+     */
+    ConsoleSpinner(const std::string& operation);
 
-    ~ConsoleSpinner() {
-        stop_flag_ = true;
-        if (spinner_thread_.joinable()) {
-            spinner_thread_.join();
-        }
-        {
-            std::lock_guard<std::mutex> lock(cout_mutex_);
-            std::cout << " " << status_ << std::endl;
-        }
-    }
+    /**
+     * @brief Destructor that stops the spinner and prints the final status.
+     */
+    ~ConsoleSpinner();
 
-    void setStatus(const std::string& status) {
-        status_ = status;
-    }
+    /**
+     * @brief Sets the final status message to display upon completion.
+     * @param status The final status message.
+     */
+    void setStatus(const std::string& status);
 
 private:
-    std::atomic<bool> stop_flag_;
-    std::thread spinner_thread_;
-    std::string operation_;
-    std::string status_;
-    static std::mutex cout_mutex_;
+    std::atomic<bool> stop_flag_; ///< Flag to indicate when the spinner should stop.
+    std::thread spinner_thread_;  ///< Thread running the spinner animation.
+    std::string operation_;       ///< Name of the operation being performed.
+    std::string status_;          ///< Final status message displayed when the spinner stops.
+    static std::mutex cout_mutex_; ///< Mutex to ensure thread-safe console output.
 
-    void run() {
-        while (!stop_flag_) {
-            {
-                std::lock_guard<std::mutex> lock(cout_mutex_);
-                std::cout << "." << std::flush;
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        }
-    }
+    /**
+     * @brief Runs the spinner animation until stopped.
+     */
+    void run();
 };
-
-std::mutex ConsoleSpinner::cout_mutex_;
 

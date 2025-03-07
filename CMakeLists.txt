@@ -32,6 +32,7 @@ add_executable(smax_ems
     RestClient/RestClient.cpp
     SmaxClient/ConnectionProperties.cpp
     SmaxClient/SMAXClient.cpp
+    SmaxClient/ConsoleSpinner.cpp
     utils/utils.cpp
 )
 
