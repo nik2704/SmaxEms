@@ -1,0 +1,109 @@
+{
+    "entity_type": "Request",
+    "properties": {
+        "Id": "111274",
+        "LastUpdateTime": 1730367159259,
+        "TaskPlanForFirstLineSupport": {
+            "LastModifierDomains": {
+                "dataDomains": [
+                    {
+                        "name": "Public"
+                    }
+                ],
+                "isAllowedToAllDomains": true
+            },
+            "Nodes": [
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [
+                        {
+                            "Parameters": [
+                                {
+                                    "Name": "isSystem",
+                                    "Value": "true"
+                                },
+                                {
+                                    "Name": "comment",
+                                    "Value": "Please try cleaning your cache and log-in in again..."
+                                }
+                            ],
+                            "TemplateId": "addComment",
+                            "Type": "action"
+                        }
+                    ],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "AutomaticTask_14aa145f194501e",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "24470",
+                        "DisplayLabelKey": "Add comment to clear cache",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Text from image",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "AutomaticTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "60218",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                },
+                {
+                    "DisplayLabelKey": "Is this webmail related?",
+                    "Id": "Switch_14aa145f193ab3b",
+                    "IsBoolean": true,
+                    "NodeType": "Switch",
+                    "SwitchOn": "${entity.UserOptions.WebMail_c==true}"
+                },
+                {
+                    "Id": "Start",
+                    "NodeType": "Start"
+                },
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "ManualTask_14aa145f194d7cb",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "24470",
+                        "AssignmentGroup": "11061",
+                        "DescriptionKey": "Check users account",
+                        "DisplayLabelKey": "Check user account",
+                        "ImpactScope": "SingleUser",
+                        "Ola": "11864",
+                        "ParentDisplayLabelKey": "Text from image",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "ManualTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "60218",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Sla": "${entity.Sla.Id}",
+                        "Urgency": "SlightDisruption"
+                    }
+                }
+            ],
+            "Transitions": [
+                {
+                    "FromNodeId": "Switch_14aa145f193ab3b",
+                    "Id": "Transition_14aa145f193ab40",
+                    "SwitchConditionValue": "${true}",
+                    "ToNodeId": "AutomaticTask_14aa145f194501e"
+                },
+                {
+                    "FromNodeId": "Switch_14aa145f193ab3b",
+                    "Id": "Transition_14aa145f193ab41",
+                    "SwitchConditionValue": "${false}",
+                    "ToNodeId": "ManualTask_14aa145f194d7cb"
+                },
+                {
+                    "FromNodeId": "Start",
+                    "Id": "Transition_14aa145f193ab42",
+                    "ToNodeId": "Switch_14aa145f193ab3b"
+                }
+            ]
+        }
+    },
+    "related_properties": {}
+}

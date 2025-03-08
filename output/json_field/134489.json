@@ -1,0 +1,413 @@
+{
+    "entity_type": "Request",
+    "properties": {
+        "Id": "134489",
+        "LastUpdateTime": 1730367122493,
+        "TaskPlanForFulfill": {
+            "LastModifierDomains": {
+                "dataDomains": [
+                    {
+                        "name": "Public"
+                    }
+                ],
+                "isAllowedToAllDomains": true
+            },
+            "Nodes": [
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [
+                        {
+                            "Parameters": [
+                                {
+                                    "Name": "entityType",
+                                    "Value": "Request"
+                                },
+                                {
+                                    "Name": "entityValues",
+                                    "Values": [
+                                        {
+                                            "Name": "ServiceDeskGroup",
+                                            "Value": "${entity.ServiceDeskGroup}"
+                                        },
+                                        {
+                                            "Name": "PhaseId",
+                                            "Value": "Log"
+                                        },
+                                        {
+                                            "Name": "Description",
+                                            "Value": "${entity.RequestsOffering.OfferingBundlesToOfferings[Id='12085'].Description}"
+                                        },
+                                        {
+                                            "Name": "RequestedForPerson",
+                                            "Value": "${entity.RequestedForPerson}"
+                                        },
+                                        {
+                                            "Name": "RegisteredForLocation",
+                                            "Value": "${entity.RegisteredForLocation}"
+                                        },
+                                        {
+                                            "Name": "EndDate",
+                                            "Value": "${entity.EndDate}"
+                                        },
+                                        {
+                                            "Name": "DisplayLabel",
+                                            "Value": "${substring(concat(entity.RequestsOffering.OfferingBundlesToOfferings[Id='12085'].DisplayLabel,' - ', entity.Id, ' - ', entity.DisplayLabel), 0, 140)}"
+                                        },
+                                        {
+                                            "Name": "StartDate",
+                                            "Value": "${entity.StartDate}"
+                                        },
+                                        {
+                                            "Name": "DeliveredToLocation",
+                                            "Value": "${entity.DeliveredToLocation}"
+                                        },
+                                        {
+                                            "Name": "RequestedByPerson",
+                                            "Value": "${entity.RequestedByPerson}"
+                                        },
+                                        {
+                                            "Name": "ExpertAssignee",
+                                            "Value": "${entity.ExpertAssignee}"
+                                        },
+                                        {
+                                            "Name": "ImpactScope",
+                                            "Value": "${entity.ImpactScope}"
+                                        },
+                                        {
+                                            "Name": "AssignedToPerson",
+                                            "Value": "${entity.AssignedToPerson}"
+                                        },
+                                        {
+                                            "Name": "OwnedByPerson",
+                                            "Value": "${entity.OwnedByPerson}"
+                                        },
+                                        {
+                                            "Name": "ExpertGroup",
+                                            "Value": "${entity.ExpertGroup}"
+                                        },
+                                        {
+                                            "Name": "ProcessId",
+                                            "Value": "Support"
+                                        },
+                                        {
+                                            "Name": "Urgency",
+                                            "Value": "${entity.Urgency}"
+                                        },
+                                        {
+                                            "Name": "AssignedToGroup",
+                                            "Value": "${entity.AssignedToGroup}"
+                                        },
+                                        {
+                                            "Name": "PreferredContactMethod",
+                                            "Value": "${entity.PreferredContactMethod}"
+                                        },
+                                        {
+                                            "Name": "RequestBundle",
+                                            "Value": "${entity.Id}"
+                                        },
+                                        {
+                                            "Name": "RequestsOffering",
+                                            "Value": "12085"
+                                        },
+                                        {
+                                            "Name": "RequestType",
+                                            "Value": "ServiceRequest"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "TemplateId": "createEntity",
+                            "Type": "action"
+                        }
+                    ],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "AutomaticTask_CreateEntitya71f6fcb-3b60-4ee4-9455-116b3ce23394",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "${entity.RegisteredForActualService.Id}",
+                        "DisplayLabelKey": "12085: Order laptop backpack",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Laptop replacement",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "AutomaticTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "119140",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                },
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [
+                        {
+                            "Parameters": [
+                                {
+                                    "Name": "entityType",
+                                    "Value": "Request"
+                                },
+                                {
+                                    "Name": "entityValues",
+                                    "Values": [
+                                        {
+                                            "Name": "ServiceDeskGroup",
+                                            "Value": "${entity.ServiceDeskGroup}"
+                                        },
+                                        {
+                                            "Name": "PhaseId",
+                                            "Value": "Log"
+                                        },
+                                        {
+                                            "Name": "Description",
+                                            "Value": "${entity.RequestsOffering.OfferingBundlesToOfferings[Id='12064'].Description}"
+                                        },
+                                        {
+                                            "Name": "RequestedForPerson",
+                                            "Value": "${entity.RequestedForPerson}"
+                                        },
+                                        {
+                                            "Name": "RegisteredForLocation",
+                                            "Value": "${entity.RegisteredForLocation}"
+                                        },
+                                        {
+                                            "Name": "EndDate",
+                                            "Value": "${entity.EndDate}"
+                                        },
+                                        {
+                                            "Name": "DisplayLabel",
+                                            "Value": "${substring(concat(entity.RequestsOffering.OfferingBundlesToOfferings[Id='12064'].DisplayLabel,' - ', entity.Id, ' - ', entity.DisplayLabel), 0, 140)}"
+                                        },
+                                        {
+                                            "Name": "StartDate",
+                                            "Value": "${entity.StartDate}"
+                                        },
+                                        {
+                                            "Name": "DeliveredToLocation",
+                                            "Value": "${entity.DeliveredToLocation}"
+                                        },
+                                        {
+                                            "Name": "RequestedByPerson",
+                                            "Value": "${entity.RequestedByPerson}"
+                                        },
+                                        {
+                                            "Name": "ExpertAssignee",
+                                            "Value": "${entity.ExpertAssignee}"
+                                        },
+                                        {
+                                            "Name": "ImpactScope",
+                                            "Value": "${entity.ImpactScope}"
+                                        },
+                                        {
+                                            "Name": "AssignedToPerson",
+                                            "Value": "${entity.AssignedToPerson}"
+                                        },
+                                        {
+                                            "Name": "OwnedByPerson",
+                                            "Value": "${entity.OwnedByPerson}"
+                                        },
+                                        {
+                                            "Name": "ExpertGroup",
+                                            "Value": "${entity.ExpertGroup}"
+                                        },
+                                        {
+                                            "Name": "ProcessId",
+                                            "Value": "Support"
+                                        },
+                                        {
+                                            "Name": "Urgency",
+                                            "Value": "${entity.Urgency}"
+                                        },
+                                        {
+                                            "Name": "AssignedToGroup",
+                                            "Value": "${entity.AssignedToGroup}"
+                                        },
+                                        {
+                                            "Name": "PreferredContactMethod",
+                                            "Value": "${entity.PreferredContactMethod}"
+                                        },
+                                        {
+                                            "Name": "RequestBundle",
+                                            "Value": "${entity.Id}"
+                                        },
+                                        {
+                                            "Name": "RequestsOffering",
+                                            "Value": "12064"
+                                        },
+                                        {
+                                            "Name": "RequestType",
+                                            "Value": "ServiceRequest"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "TemplateId": "createEntity",
+                            "Type": "action"
+                        }
+                    ],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "AutomaticTask_CreateEntitya04688ee-0cc2-43c9-adf5-1eb6183e3176",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "${entity.RegisteredForActualService.Id}",
+                        "DisplayLabelKey": "12064: Order docking station",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Laptop replacement",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "AutomaticTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "119140",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                },
+                {
+                    "Id": "Start",
+                    "NodeType": "Start"
+                },
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [
+                        {
+                            "Parameters": [
+                                {
+                                    "Name": "entityType",
+                                    "Value": "Request"
+                                },
+                                {
+                                    "Name": "entityValues",
+                                    "Values": [
+                                        {
+                                            "Name": "ServiceDeskGroup",
+                                            "Value": "${entity.ServiceDeskGroup}"
+                                        },
+                                        {
+                                            "Name": "PhaseId",
+                                            "Value": "Log"
+                                        },
+                                        {
+                                            "Name": "Description",
+                                            "Value": "${entity.RequestsOffering.OfferingBundlesToOfferings[Id='12089'].Description}"
+                                        },
+                                        {
+                                            "Name": "RequestedForPerson",
+                                            "Value": "${entity.RequestedForPerson}"
+                                        },
+                                        {
+                                            "Name": "RegisteredForLocation",
+                                            "Value": "${entity.RegisteredForLocation}"
+                                        },
+                                        {
+                                            "Name": "EndDate",
+                                            "Value": "${entity.EndDate}"
+                                        },
+                                        {
+                                            "Name": "DisplayLabel",
+                                            "Value": "${substring(concat(entity.RequestsOffering.OfferingBundlesToOfferings[Id='12089'].DisplayLabel,' - ', entity.Id, ' - ', entity.DisplayLabel), 0, 140)}"
+                                        },
+                                        {
+                                            "Name": "StartDate",
+                                            "Value": "${entity.StartDate}"
+                                        },
+                                        {
+                                            "Name": "DeliveredToLocation",
+                                            "Value": "${entity.DeliveredToLocation}"
+                                        },
+                                        {
+                                            "Name": "RequestedByPerson",
+                                            "Value": "${entity.RequestedByPerson}"
+                                        },
+                                        {
+                                            "Name": "ExpertAssignee",
+                                            "Value": "${entity.ExpertAssignee}"
+                                        },
+                                        {
+                                            "Name": "ImpactScope",
+                                            "Value": "${entity.ImpactScope}"
+                                        },
+                                        {
+                                            "Name": "AssignedToPerson",
+                                            "Value": "${entity.AssignedToPerson}"
+                                        },
+                                        {
+                                            "Name": "OwnedByPerson",
+                                            "Value": "${entity.OwnedByPerson}"
+                                        },
+                                        {
+                                            "Name": "ExpertGroup",
+                                            "Value": "${entity.ExpertGroup}"
+                                        },
+                                        {
+                                            "Name": "ProcessId",
+                                            "Value": "Support"
+                                        },
+                                        {
+                                            "Name": "Urgency",
+                                            "Value": "${entity.Urgency}"
+                                        },
+                                        {
+                                            "Name": "AssignedToGroup",
+                                            "Value": "${entity.AssignedToGroup}"
+                                        },
+                                        {
+                                            "Name": "PreferredContactMethod",
+                                            "Value": "${entity.PreferredContactMethod}"
+                                        },
+                                        {
+                                            "Name": "RequestBundle",
+                                            "Value": "${entity.Id}"
+                                        },
+                                        {
+                                            "Name": "RequestsOffering",
+                                            "Value": "12089"
+                                        },
+                                        {
+                                            "Name": "RequestType",
+                                            "Value": "ServiceRequest"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "TemplateId": "createEntity",
+                            "Type": "action"
+                        }
+                    ],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "AutomaticTask_CreateEntity9479865f-264c-4d54-ad47-05c5ab7f6dfa",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "${entity.RegisteredForActualService.Id}",
+                        "DisplayLabelKey": "12089: Order laptop",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Laptop replacement",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "AutomaticTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "119140",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                }
+            ],
+            "Transitions": [
+                {
+                    "FromNodeId": "Start",
+                    "Id": "Transition_StartAutomaticTask_CreateEntitya04688ee-0cc2-43c9-adf5-1eb6183e3176",
+                    "ToNodeId": "AutomaticTask_CreateEntitya04688ee-0cc2-43c9-adf5-1eb6183e3176"
+                },
+                {
+                    "FromNodeId": "Start",
+                    "Id": "Transition_StartAutomaticTask_CreateEntity9479865f-264c-4d54-ad47-05c5ab7f6dfa",
+                    "ToNodeId": "AutomaticTask_CreateEntity9479865f-264c-4d54-ad47-05c5ab7f6dfa"
+                },
+                {
+                    "FromNodeId": "Start",
+                    "Id": "Transition_StartAutomaticTask_CreateEntitya71f6fcb-3b60-4ee4-9455-116b3ce23394",
+                    "ToNodeId": "AutomaticTask_CreateEntitya71f6fcb-3b60-4ee4-9455-116b3ce23394"
+                }
+            ]
+        }
+    },
+    "related_properties": {}
+}

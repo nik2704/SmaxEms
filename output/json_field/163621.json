@@ -1,0 +1,639 @@
+{
+    "entity_type": "Request",
+    "properties": {
+        "Id": "163621",
+        "LastUpdateTime": 1733810316664,
+        "TaskPlanForApprove": {
+            "LastModifierDomains": {
+                "dataDomains": [
+                    {
+                        "name": "Customer_c"
+                    },
+                    {
+                        "name": "EMEA_c"
+                    },
+                    {
+                        "name": "APJ_c"
+                    },
+                    {
+                        "name": "Security_c"
+                    },
+                    {
+                        "name": "Public"
+                    },
+                    {
+                        "name": "Default_c"
+                    },
+                    {
+                        "name": "Sustainability_c"
+                    },
+                    {
+                        "name": "HR_c"
+                    }
+                ],
+                "isAllowedToAllDomains": true
+            },
+            "Nodes": [
+                {
+                    "ApprovalAssignees": [
+                        {
+                            "EvaluatedAssignees": [
+                                "ems://Person/10575"
+                            ]
+                        },
+                        {
+                            "EvaluatedAssignees": [
+                                "ems://PersonGroup/11054"
+                            ]
+                        }
+                    ],
+                    "BusinessRules": [],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "Approval_1e5b1468f698ff2",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "24361",
+                        "ApprovalPolicy": "OneMustApprove",
+                        "DisplayLabelKey": "Manager approve",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Request a new PC",
+                        "PhaseId": "New",
+                        "PlatformTaskType": "Approval",
+                        "Priority": "LowPriority",
+                        "ProcessId": "ApprovalTaskProcess",
+                        "Requestor": "60192",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption",
+                        "type": "Task"
+                    }
+                },
+                {
+                    "DisplayLabelKey": "Order high performance PC?",
+                    "Id": "Switch_5591471a0d1582",
+                    "IsBoolean": true,
+                    "NodeType": "Switch",
+                    "SwitchOn": "${entity.UserOptions.SelectPCType_c=='HighPerformance_c'}"
+                },
+                {
+                    "Id": "Start",
+                    "NodeType": "Start"
+                },
+                {
+                    "DisplayLabelKey": "Requester has a manager",
+                    "Id": "Switch_ecc14de0b1feda",
+                    "IsBoolean": true,
+                    "NodeType": "Switch",
+                    "SwitchOn": "${entity.RequestedForPerson.Manager != null}"
+                },
+                {
+                    "Id": "NoOp_5591471a0d7660",
+                    "NodeType": "NoOp"
+                }
+            ],
+            "Transitions": [
+                {
+                    "FromNodeId": "Switch_ecc14de0b1feda",
+                    "Id": "Transition_ecc14de0b1fedb",
+                    "SwitchConditionValue": "${true}",
+                    "ToNodeId": "Approval_1e5b1468f698ff2"
+                },
+                {
+                    "FromNodeId": "Approval_1e5b1468f698ff2",
+                    "Id": "Transition_5591471a0d7661",
+                    "ToNodeId": "NoOp_5591471a0d7660"
+                },
+                {
+                    "FromNodeId": "Switch_ecc14de0b1feda",
+                    "Id": "Transition_ecc14de0b1fedc",
+                    "SwitchConditionValue": "${false}",
+                    "ToNodeId": "NoOp_5591471a0d7660"
+                },
+                {
+                    "FromNodeId": "Start",
+                    "Id": "Transition_5591471a0d1585",
+                    "ToNodeId": "Switch_5591471a0d1582"
+                },
+                {
+                    "FromNodeId": "Switch_5591471a0d1582",
+                    "Id": "Transition_5591471a0d1584",
+                    "SwitchConditionValue": "${false}",
+                    "ToNodeId": "NoOp_5591471a0d7660"
+                },
+                {
+                    "FromNodeId": "Switch_5591471a0d1582",
+                    "Id": "Transition_5591471a0d1583",
+                    "SwitchConditionValue": "${true}",
+                    "ToNodeId": "Switch_ecc14de0b1feda"
+                }
+            ]
+        },
+        "TaskPlanForFulfill": {
+            "LastModifierDomains": {
+                "dataDomains": [
+                    {
+                        "name": "Customer_c"
+                    },
+                    {
+                        "name": "EMEA_c"
+                    },
+                    {
+                        "name": "APJ_c"
+                    },
+                    {
+                        "name": "Security_c"
+                    },
+                    {
+                        "name": "Public"
+                    },
+                    {
+                        "name": "Default_c"
+                    },
+                    {
+                        "name": "Sustainability_c"
+                    },
+                    {
+                        "name": "HR_c"
+                    }
+                ],
+                "isAllowedToAllDomains": true
+            },
+            "Nodes": [
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "ManualTask_12da1463df74d87",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "24361",
+                        "Assignee": "${entity.AssignedToPerson}",
+                        "AssignmentGroup": "11060",
+                        "CostCenter": "${entity.RequestedForPerson.CostCenter}",
+                        "DescriptionKey": "Manual reserve PC",
+                        "DisplayLabelKey": "Manual reserve PC",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Request a new PC",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "ManualTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "60192",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                },
+                {
+                    "Id": "Start",
+                    "NodeType": "Start"
+                },
+                {
+                    "DisplayLabelKey": "Is PC reservation successful?",
+                    "Id": "Switch_12da1463df4a97b",
+                    "IsBoolean": true,
+                    "NodeType": "Switch",
+                    "SwitchOn": "${entity.RequestHasReservation[PhaseId='Active'].count>0}"
+                },
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [
+                        {
+                            "Parameters": [
+                                {
+                                    "Name": "targetFieldName",
+                                    "Value": "Solution"
+                                },
+                                {
+                                    "Name": "value",
+                                    "Value": "<p>The PC has been delivered</p>"
+                                }
+                            ],
+                            "TemplateId": "setField",
+                            "Type": "action"
+                        }
+                    ],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "AutomaticTask_1c2414641ff2153",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "24361",
+                        "DescriptionKey": "Write solution",
+                        "DisplayLabelKey": "Write solution",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Request a new PC",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "AutomaticTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "60192",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                },
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [
+                        {
+                            "Parameters": [
+                                {
+                                    "Name": "targetFieldName",
+                                    "Value": "CompletionCode"
+                                },
+                                {
+                                    "Name": "value",
+                                    "Value": "CompletionCodeFulfilled"
+                                }
+                            ],
+                            "TemplateId": "setField",
+                            "Type": "action"
+                        }
+                    ],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "AutomaticTask_1c241464207df4f",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "24361",
+                        "DescriptionKey": "Write completion code",
+                        "DisplayLabelKey": "Write completion code",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Request a new PC",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "AutomaticTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "60192",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                },
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [
+                        {
+                            "Parameters": [
+                                {
+                                    "Name": "DeliveredToLocation",
+                                    "Value": "${first_non_empty_value(entity.DeliveredToLocation,entity.RequestedForPerson.Location)}"
+                                },
+                                {
+                                    "Name": "PhaseId",
+                                    "Value": "pInStock"
+                                },
+                                {
+                                    "Name": "Options",
+                                    "Values": [
+                                        {
+                                            "Name": "WarrantyEndDate",
+                                            "Value": "No"
+                                        },
+                                        {
+                                            "Name": "EntryDate",
+                                            "Value": "Earliest"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Name": "RationalizedToAssetModel",
+                                    "Value": "${entity.RationalizedToAssetModel}"
+                                }
+                            ],
+                            "TemplateId": "checkAndReserveAssetWithOptions",
+                            "Type": "action"
+                        }
+                    ],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "AutomaticTask_26361463c6aeaa7",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "24361",
+                        "DescriptionKey": "Reserve PC",
+                        "DisplayLabelKey": "Reserve PC",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Request a new PC",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "AutomaticTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "60192",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                },
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [
+                        {
+                            "Parameters": [
+                                {
+                                    "Name": "targetFieldName",
+                                    "Value": "RationalizedToAssetModel"
+                                },
+                                {
+                                    "Name": "value",
+                                    "Value": "11352"
+                                }
+                            ],
+                            "TemplateId": "setField",
+                            "Type": "action"
+                        }
+                    ],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "AutomaticTask_e091485e6316d6",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "24361",
+                        "DescriptionKey": "Set request model to travel friendly",
+                        "DisplayLabelKey": "Set request model to travel friendly",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Request a new PC",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "AutomaticTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "60192",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                },
+                {
+                    "DisplayLabelKey": "Is PC reserved already",
+                    "Id": "Switch_169f14694368e49",
+                    "IsBoolean": true,
+                    "NodeType": "Switch",
+                    "SwitchOn": "${entity.RequestHasReservation[PhaseId='Active'].count>0}"
+                },
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "ManualTask_2461146409465e1",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "24361",
+                        "Assignee": "${entity.AssignedToPerson}",
+                        "AssignmentGroup": "11060",
+                        "CostCenter": "${entity.RequestedForPerson.CostCenter}",
+                        "DescriptionKey": "Prepare PC",
+                        "DisplayLabelKey": "Prepare PC",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Request a new PC",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "ManualTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "60192",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                },
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [
+                        {
+                            "Parameters": [
+                                {
+                                    "Name": "entityType",
+                                    "Value": "${'Reservation'}"
+                                },
+                                {
+                                    "Name": "entityValues",
+                                    "Values": [
+                                        {
+                                            "Name": "PhaseId",
+                                            "Value": "Close"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "Name": "entityIds",
+                                    "Values": [
+                                        {
+                                            "Value": "${entity.RequestHasReservation.Id}"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "TemplateId": "setFieldsOnRelatedEntities",
+                            "Type": "action"
+                        }
+                    ],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "AutomaticTask_28e1471f9f4077",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "24361",
+                        "DescriptionKey": "Close reservation",
+                        "DisplayLabelKey": "Close reservation",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Request a new PC",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "AutomaticTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "60192",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                },
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "ManualTask_c9c14693d94be4",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "24361",
+                        "Assignee": "${entity.AssignedToPerson}",
+                        "AssignmentGroup": "11060",
+                        "DescriptionKey": "Set requested asset model",
+                        "DisplayLabelKey": "Set requested asset model",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Request a new PC",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "ManualTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "60192",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                },
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [
+                        {
+                            "Parameters": [
+                                {
+                                    "Name": "targetFieldName",
+                                    "Value": "RationalizedToAssetModel"
+                                },
+                                {
+                                    "Name": "value",
+                                    "Value": "11348"
+                                }
+                            ],
+                            "TemplateId": "setField",
+                            "Type": "action"
+                        }
+                    ],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "AutomaticTask_e091485e624220",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "24361",
+                        "DescriptionKey": "Set request model to high performance",
+                        "DisplayLabelKey": "Set request model to high performance",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Request a new PC",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "AutomaticTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "60192",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                },
+                {
+                    "ApprovalAssignees": [],
+                    "BusinessRules": [],
+                    "EvaluateOnTaskGeneration": [],
+                    "Id": "ManualTask_20c9147431ae673",
+                    "NodeType": "Task",
+                    "TaskProperties": {
+                        "AffectsService": "24361",
+                        "Assignee": "${entity.AssignedToPerson}",
+                        "AssignmentGroup": "11060",
+                        "CostCenter": "${entity.RequestedForPerson.CostCenter}",
+                        "DescriptionKey": "Deliver PC",
+                        "DisplayLabelKey": "Deliver PC",
+                        "ImpactScope": "SingleUser",
+                        "ParentDisplayLabelKey": "Request a new PC",
+                        "ParentEntityType": "Request",
+                        "PlatformTaskType": "ManualTask",
+                        "Priority": "LowPriority",
+                        "Requestor": "60192",
+                        "RequirePlanning": false,
+                        "RequireReview": false,
+                        "Urgency": "SlightDisruption"
+                    }
+                },
+                {
+                    "DisplayLabelKey": "Is requested asset model set already?",
+                    "Id": "Switch_d301468fbfa200",
+                    "IsBoolean": true,
+                    "NodeType": "Switch",
+                    "SwitchOn": "${entity.RationalizedToAssetModel!=null}"
+                },
+                {
+                    "DisplayLabelKey": "Determine requested PC model",
+                    "Id": "Switch_e091485e5f5044",
+                    "IsBoolean": false,
+                    "NodeType": "Switch",
+                    "SwitchOn": "${entity.UserOptions.SelectPCType_c}"
+                }
+            ],
+            "Transitions": [
+                {
+                    "FromNodeId": "AutomaticTask_26361463c6aeaa7",
+                    "Id": "Transition_12da1463df4a97e",
+                    "ToNodeId": "Switch_12da1463df4a97b"
+                },
+                {
+                    "FromNodeId": "AutomaticTask_e091485e624220",
+                    "Id": "Transition_e091485e636882",
+                    "ToNodeId": "Switch_d301468fbfa200"
+                },
+                {
+                    "FromNodeId": "Switch_e091485e5f5044",
+                    "Id": "Transition_e091485e60101a",
+                    "SwitchConditionValue": "TravelFriendly_c",
+                    "ToNodeId": "AutomaticTask_e091485e6316d6"
+                },
+                {
+                    "FromNodeId": "ManualTask_12da1463df74d87",
+                    "Id": "Transition_20d4146414fcec8",
+                    "ToNodeId": "ManualTask_2461146409465e1"
+                },
+                {
+                    "FromNodeId": "Start",
+                    "Id": "Transition_169f14694368e4c",
+                    "ToNodeId": "Switch_169f14694368e49"
+                },
+                {
+                    "FromNodeId": "ManualTask_c9c14693d94be4",
+                    "Id": "Transition_c9c14693d9a4f9",
+                    "ToNodeId": "AutomaticTask_26361463c6aeaa7"
+                },
+                {
+                    "FromNodeId": "Switch_169f14694368e49",
+                    "Id": "Transition_169f14694368e4b",
+                    "SwitchConditionValue": "${false}",
+                    "ToNodeId": "Switch_e091485e5f5044"
+                },
+                {
+                    "FromNodeId": "ManualTask_2461146409465e1",
+                    "Id": "Transition_28e1471f9f4078",
+                    "ToNodeId": "AutomaticTask_28e1471f9f4077"
+                },
+                {
+                    "FromNodeId": "Switch_169f14694368e49",
+                    "Id": "Transition_169f14694368e4a",
+                    "SwitchConditionValue": "${true}",
+                    "ToNodeId": "ManualTask_2461146409465e1"
+                },
+                {
+                    "FromNodeId": "AutomaticTask_1c2414641ff2153",
+                    "Id": "Transition_1c241464207df50",
+                    "ToNodeId": "AutomaticTask_1c241464207df4f"
+                },
+                {
+                    "FromNodeId": "ManualTask_20c9147431ae673",
+                    "Id": "Transition_20c9147431b0927",
+                    "ToNodeId": "AutomaticTask_1c2414641ff2153"
+                },
+                {
+                    "FromNodeId": "AutomaticTask_e091485e6316d6",
+                    "Id": "Transition_e091485e6383c8",
+                    "ToNodeId": "Switch_d301468fbfa200"
+                },
+                {
+                    "FromNodeId": "Switch_d301468fbfa200",
+                    "Id": "Transition_d301468fbfa202",
+                    "SwitchConditionValue": "${false}",
+                    "ToNodeId": "ManualTask_c9c14693d94be4"
+                },
+                {
+                    "FromNodeId": "Switch_e091485e5f5044",
+                    "Id": "Transition_e091485e5f5045",
+                    "SwitchConditionValue": "HighPerformance_c",
+                    "ToNodeId": "AutomaticTask_e091485e624220"
+                },
+                {
+                    "FromNodeId": "Switch_d301468fbfa200",
+                    "Id": "Transition_d301468fbfa201",
+                    "SwitchConditionValue": "${true}",
+                    "ToNodeId": "AutomaticTask_26361463c6aeaa7"
+                },
+                {
+                    "FromNodeId": "Switch_12da1463df4a97b",
+                    "Id": "Transition_12da1463df4a97d",
+                    "SwitchConditionValue": "${false}",
+                    "ToNodeId": "ManualTask_12da1463df74d87"
+                },
+                {
+                    "FromNodeId": "Switch_12da1463df4a97b",
+                    "Id": "Transition_12da1463df4a97c",
+                    "SwitchConditionValue": "${true}",
+                    "ToNodeId": "ManualTask_2461146409465e1"
+                },
+                {
+                    "FromNodeId": "AutomaticTask_28e1471f9f4077",
+                    "Id": "Transition_20c9147431ae674",
+                    "ToNodeId": "ManualTask_20c9147431ae673"
+                }
+            ]
+        }
+    },
+    "related_properties": {}
+}
