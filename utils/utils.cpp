@@ -112,7 +112,7 @@ std::unique_ptr<ValidationResult> validate_input_values(const InputValues& input
     output_result = validate_action(input);
     if (output_result->result != 0) return output_result;
 
-    if (input.action != "GET" && input.csv.empty()) {
+    if ((input.action == "CREATE"|| input.action == "UPDATE") && input.csv.empty()) {
         return std::make_unique<ValidationResult>(ValidationResult{"CSV is mandatory for CREATE or UPDATE", 1});
     }
 
